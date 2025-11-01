@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Calendar, Code2, AlertCircle, Eye } from 'lucide-react';
+import { Calendar, Code2, Eye } from 'lucide-react';
 
 interface HistoryItem {
   id: string;

@@ -2,10 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Base styles using the custom theme tokens (background, text, surface...) */
+/* Base styles */
 @layer base {
   body {
-    @apply bg-background text-text;
+    @apply bg-dark-bg text-text-primary;
     font-family: Inter, Poppins, system-ui, -apple-system, "Segoe UI", Roboto,
       "Helvetica Neue", Arial;
   }

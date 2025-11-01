@@ -81,7 +81,7 @@ function getWebviewContent(context: vscode.ExtensionContext, webview: vscode.Web
   let html = fs.readFileSync(indexPath, 'utf-8');
 
   // Fix script and CSS paths
-  html = html.replace(/(src|href)="(.+?)"/g, (match, attr, filePath) => {
+  html = html.replace(/(src|href)="(.+?)"/g, (_match, attr, filePath) => {
     const fileUri = webview.asWebviewUri(vscode.Uri.file(path.join(distPath, filePath)));
     return `${attr}="${fileUri}"`;
   });

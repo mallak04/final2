@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Header from './components/Header';
+import LoginPage from './pages/LoginPage';
 import AnalysisPage from './pages/AnalysisPage';
-import DashboardPage from './pages/DashboardPage';
+import ProfilePage from './pages/ProfilePage';
+import ChatbotPage from './pages/ChatbotPage';
+import BottomNavigation from './components/BottomNavigation';
 
 // Type for VS Code API
 declare global {
@@ -19,8 +21,11 @@ interface CodeData {
   fileName: string;
 }
 
+type Page = 'analysis' | 'profile' | 'chatbot';
+
 function App() {
-  const [currentPage, setCurrentPage] = useState<'analysis' | 'dashboard'>('analysis');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentPage, setCurrentPage] = useState<Page>('analysis');
   const [codeData, setCodeData] = useState<CodeData | null>(null);
 
   useEffect(() => {
@@ -54,33 +59,68 @@ function App() {
     };
   }, []);
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <Header onNavigate={setCurrentPage} currentPage={currentPage} />
+  // Handle login
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
 
+  // Show login page if not authenticated
+  if (!isAuthenticated) {
+    return <LoginPage onLogin={handleLogin} />;
+  }
+
+  // Page transition variants
+  const pageVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20 },
+  };
+
+  return (
+    <div className="min-h-screen bg-dark-bg">
       <AnimatePresence mode="wait">
-        {currentPage === 'analysis' ? (
+        {currentPage === 'analysis' && (
           <motion.div
             key="analysis"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
             transition={{ duration: 0.3 }}
           >
             <AnalysisPage codeData={codeData} />
           </motion.div>
-        ) : (
+        )}
+
+        {currentPage === 'profile' && (
           <motion.div
-            key="dashboard"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
+            key="profile"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
             transition={{ duration: 0.3 }}
           >
-            <DashboardPage />
+            <ProfilePage />
+          </motion.div>
+        )}
+
+        {currentPage === 'chatbot' && (
+          <motion.div
+            key="chatbot"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ duration: 0.3 }}
+          >
+            <ChatbotPage />
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Bottom Navigation */}
+      <BottomNavigation currentPage={currentPage} onNavigate={setCurrentPage} />
     </div>
   );
 }
