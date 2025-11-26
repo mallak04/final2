@@ -40,8 +40,20 @@ async function openDashboard(context: vscode.ExtensionContext) {
     localResourceRoots: [vscode.Uri.file(path.join(context.extensionPath, 'media', 'dist'))],
   };
 
+  const sendCodeToWebview = () => {
+    currentPanel?.webview.postMessage({
+      type: 'updateCode',
+      code,
+      language,
+      fileName
+    });
+    console.log('Sent code to webview:', fileName, 'Length:', code.length);
+  };
+
   if (currentPanel) {
     currentPanel.reveal(vscode.ViewColumn.Beside);
+    // Send immediately when reusing panel
+    sendCodeToWebview();
   } else {
     currentPanel = vscode.window.createWebviewPanel(
       'abcodeDashboard',
@@ -58,20 +70,25 @@ async function openDashboard(context: vscode.ExtensionContext) {
       currentPanel.webview.html = getWebviewContent(context, currentPanel.webview);
     }
 
+    // Listen for webview ready message
+    currentPanel.webview.onDidReceiveMessage(
+      message => {
+        if (message.type === 'webviewReady') {
+          console.log('Webview ready, sending code...');
+          sendCodeToWebview();
+        }
+      }
+    );
+
     currentPanel.onDidDispose(() => {
       currentPanel = undefined;
     });
-  }
 
-  // Send data after short delay
-  setTimeout(() => {
-    currentPanel?.webview.postMessage({
-      type: 'updateCode',
-      code,
-      language,
-      fileName
-    });
-  }, 800);
+    // Also send after delay as fallback
+    setTimeout(() => {
+      sendCodeToWebview();
+    }, 1500);
+  }
 }
 
 function getWebviewContent(context: vscode.ExtensionContext, webview: vscode.Webview): string {

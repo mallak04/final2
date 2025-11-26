@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import HistoryList from '../components/HistoryList';
 import ProgressChart from '../components/ProgressChart';
 import { mockHistory, mockProgressData } from '../data/mockData';
-import { Award, TrendingUp, Code2 } from 'lucide-react';
+import { Award, TrendingUp, Bot } from 'lucide-react';
 
 export default function DashboardPage() {
   const totalAnalyses = mockHistory.length;
@@ -28,7 +28,7 @@ export default function DashboardPage() {
           className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white shadow-lg"
         >
           <div className="flex items-center justify-between mb-4">
-            <Code2 className="w-8 h-8" />
+            <Bot className="w-8 h-8" />
             <span className="text-3xl font-bold">{totalAnalyses}</span>
           </div>
           <h3 className="text-lg font-semibold mb-1">Total Analyses</h3>

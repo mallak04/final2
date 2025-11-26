@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import AnalysisPage from './pages/AnalysisPage';
 import ProfilePage from './pages/ProfilePage';
 import ChatbotPage from './pages/ChatbotPage';
+import ProgressPage from './pages/ProgressPage';
 import BottomNavigation from './components/BottomNavigation';
 
 // Type for VS Code API
@@ -21,7 +22,7 @@ interface CodeData {
   fileName: string;
 }
 
-type Page = 'analysis' | 'profile' | 'chatbot';
+type Page = 'analysis' | 'chatbot' | 'progress' | 'profile';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -36,22 +37,39 @@ function App() {
     const handleMessage = (event: MessageEvent) => {
       const message = event.data;
 
+      console.log('Received message:', message);
+
       if (message.type === 'updateCode') {
-        console.log('Received code update:', message.fileName);
+        console.log('✓ Received code update from extension:');
+        console.log('  - File name:', message.fileName);
+        console.log('  - Language:', message.language);
+        console.log('  - Code length:', message.code?.length || 0);
+        console.log('  - Code preview:', message.code?.substring(0, 100));
+
         setCodeData({
           code: message.code,
           language: message.language,
           fileName: message.fileName
         });
+
+        console.log('✓ Code data state updated');
       }
     };
 
     window.addEventListener('message', handleMessage);
 
-    // Signal that the webview is ready
+    // Signal that the webview is ready - try multiple times to ensure delivery
     if (vscode) {
-      console.log('Webview ready, signaling to extension');
+      console.log('→ Sending webviewReady signal to extension');
       vscode.postMessage({ type: 'webviewReady' });
+
+      // Send again after a short delay to ensure extension received it
+      setTimeout(() => {
+        vscode.postMessage({ type: 'webviewReady' });
+        console.log('→ Sent webviewReady signal (retry)');
+      }, 500);
+    } else {
+      console.warn('⚠ VSCode API not available - running in browser mode');
     }
 
     return () => {
@@ -77,7 +95,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-bg">
+    <div className="min-h-screen bg-light-bg dark:bg-dark-bg transition-colors duration-300">
       <AnimatePresence mode="wait">
         {currentPage === 'analysis' && (
           <motion.div
@@ -115,6 +133,19 @@ function App() {
             transition={{ duration: 0.3 }}
           >
             <ChatbotPage />
+          </motion.div>
+        )}
+
+        {currentPage === 'progress' && (
+          <motion.div
+            key="progress"
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            transition={{ duration: 0.3 }}
+          >
+            <ProgressPage />
           </motion.div>
         )}
       </AnimatePresence>

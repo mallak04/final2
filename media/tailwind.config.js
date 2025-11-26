@@ -2,6 +2,7 @@
 import colors from "tailwindcss/colors";
 
 export default {
+  darkMode: 'class',
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
@@ -10,10 +11,18 @@ export default {
 
         // Dark theme colors - soft developer-friendly palette
         dark: {
-          bg: "#1c1e20",         // soft charcoal background
-          surface: "#252729",     // card/panel background
-          elevated: "#2d2f31",    // elevated elements
-          border: "#3a3c3e",      // borders
+          bg: "#2a2b2d",         // lighter greyish background
+          surface: "#32333a",     // card/panel background
+          elevated: "#3a3b42",    // elevated elements
+          border: "#474851",      // borders
+        },
+
+        // Light theme colors
+        light: {
+          bg: "#f8fafc",         // light background
+          surface: "#ffffff",     // card/panel background
+          elevated: "#f1f5f9",    // elevated elements
+          border: "#e2e8f0",      // borders
         },
 
         // Muted teal/cyan/green accents

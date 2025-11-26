@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Code, AlertCircle, CheckCircle, Lightbulb, TrendingUp, Award, Code2 } from 'lucide-react';
-import { mockCodeSample, mockErrors, mockRecommendations, mockHistory } from '../data/mockData';
+import { Code, AlertCircle, CheckCircle, Lightbulb, TrendingUp, Award, Bot, CheckSquare, ChevronDown, ChevronRight } from 'lucide-react';
+import { mockCodeSample, mockCorrectedCode, mockErrors, mockRecommendations, mockHistory } from '../data/mockData';
 import SecurityAlert from '../components/SecurityAlert';
 
 interface CodeData {
@@ -14,8 +15,21 @@ interface AnalysisPageProps {
 }
 
 export default function AnalysisPage({ codeData }: AnalysisPageProps) {
+  const [expandedErrors, setExpandedErrors] = useState<Set<string>>(new Set());
+
+  const toggleError = (category: string) => {
+    const newExpanded = new Set(expandedErrors);
+    if (newExpanded.has(category)) {
+      newExpanded.delete(category);
+    } else {
+      newExpanded.add(category);
+    }
+    setExpandedErrors(newExpanded);
+  };
+
   // Use real code if available, otherwise fall back to mock data
   const displayCode = codeData?.code || mockCodeSample;
+  const correctedCode = codeData?.code ? codeData.code : mockCorrectedCode;
   const fileName = codeData?.fileName || 'Sample Code';
 
   // Calculate stats
@@ -25,7 +39,7 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
   const avgErrors = (totalErrorsHistory / totalAnalyses).toFixed(1);
 
   return (
-    <div className="min-h-screen bg-dark-bg pb-24 px-4 pt-8">
+    <div className="min-h-screen bg-light-bg dark:bg-dark-bg pb-24 px-4 pt-8 transition-colors duration-300">
       <div className="max-w-7xl mx-auto">
         {/* Header with stats */}
         <motion.div
@@ -33,58 +47,40 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-bold text-text-primary mb-6">Code Analysis</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-text-primary mb-6">Code Analysis</h1>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.1 }}
-              className="bg-dark-surface border border-dark-border rounded-xl p-5 hover:border-accent-teal transition-all shadow-lg"
+              className="bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-xl p-5 hover:border-accent-teal transition-all shadow-lg"
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="w-12 h-12 bg-accent-teal/10 rounded-lg flex items-center justify-center">
-                  <Code2 className="w-6 h-6 text-accent-teal" />
+                  <Bot className="w-6 h-6 text-accent-teal" />
                 </div>
-                <span className="text-3xl font-bold text-text-primary">{totalAnalyses}</span>
+                <span className="text-3xl font-bold text-gray-900 dark:text-text-primary">{totalAnalyses}</span>
               </div>
-              <h3 className="text-lg font-semibold text-text-primary mb-1">Total Analyses</h3>
-              <p className="text-text-secondary text-sm">Code reviews completed</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-text-primary mb-1">Total Analyses</h3>
+              <p className="text-gray-600 dark:text-text-secondary text-sm">Code reviews completed</p>
             </motion.div>
 
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="bg-dark-surface border border-dark-border rounded-xl p-5 hover:border-accent-cyan transition-all shadow-lg"
+              className="bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-xl p-5 hover:border-accent-cyan transition-all shadow-lg"
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="w-12 h-12 bg-accent-cyan/10 rounded-lg flex items-center justify-center">
                   <TrendingUp className="w-6 h-6 text-accent-cyan" />
                 </div>
-                <span className="text-3xl font-bold text-text-primary">{avgErrors}</span>
+                <span className="text-3xl font-bold text-gray-900 dark:text-text-primary">{avgErrors}</span>
               </div>
-              <h3 className="text-lg font-semibold text-text-primary mb-1">Avg Errors</h3>
-              <p className="text-text-secondary text-sm">Per analysis session</p>
-            </motion.div>
-
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="bg-dark-surface border border-dark-border rounded-xl p-5 hover:border-accent-green transition-all shadow-lg"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-12 h-12 bg-accent-green/10 rounded-lg flex items-center justify-center">
-                  <Award className="w-6 h-6 text-accent-green" />
-                </div>
-                <span className="text-3xl font-bold text-text-primary">
-                  {Math.round((1 - totalErrorsHistory / (totalAnalyses * 10)) * 100)}%
-                </span>
-              </div>
-              <h3 className="text-lg font-semibold text-text-primary mb-1">Code Quality</h3>
-              <p className="text-text-secondary text-sm">Overall score</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-text-primary mb-1">Avg Errors</h3>
+              <p className="text-gray-600 dark:text-text-secondary text-sm">Per analysis session</p>
             </motion.div>
           </div>
 
@@ -93,57 +89,74 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-6 p-4 bg-accent-teal/10 border border-accent-teal/30 rounded-lg"
+              className="mb-6 p-4 bg-accent-green/10 border border-accent-green/30 rounded-lg"
             >
-              <p className="text-sm text-text-primary">
-                <span className="font-semibold">Currently Analyzing:</span> {fileName} ({codeData.language})
-              </p>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-accent-green" />
+                <p className="text-sm text-gray-900 dark:text-text-primary">
+                  <span className="font-semibold">✓ Loaded:</span> {fileName} ({codeData.language}) - {codeData.code.length} characters
+                </p>
+              </div>
             </motion.div>
           )}
         </motion.div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Code Display */}
-          <motion.div
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            className="bg-dark-surface border border-dark-border rounded-xl overflow-hidden shadow-lg"
-          >
-            <div className="bg-gradient-to-r from-accent-teal to-accent-cyan px-4 py-3 flex items-center gap-2">
-              <Code className="w-5 h-5 text-white" />
-              <h2 className="text-lg font-semibold text-white">Your Code</h2>
-            </div>
+        {/* Corrected Code - Full Width */}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-xl overflow-hidden shadow-lg mb-6"
+        >
+          <div className="bg-accent-green px-4 py-3 flex items-center gap-2">
+            <CheckSquare className="w-5 h-5 text-white" />
+            <h2 className="text-lg font-semibold text-white">Corrected Code</h2>
+          </div>
 
-            <div className="p-6">
-              <SecurityAlert />
-              <div className="bg-dark-elevated border border-dark-border rounded-lg p-4 overflow-x-auto">
-                <pre className="text-sm font-mono text-text-primary leading-relaxed">
-                  {displayCode}
-                </pre>
-              </div>
+          <div className="p-6">
+            <SecurityAlert />
+            <div className="bg-dark-elevated dark:bg-dark-elevated bg-light-elevated border border-accent-green/30 rounded-lg p-4 overflow-x-auto">
+              <pre className="text-sm font-mono text-gray-900 dark:text-text-primary leading-relaxed">
+                {codeData ? (
+                  // Show actual saved code when available
+                  correctedCode
+                ) : (
+                  // Show mock corrected code with highlights when using mock data
+                  <code dangerouslySetInnerHTML={{ __html: mockCorrectedCode.replace(/let total = 0;/g, '<u class="decoration-accent-green decoration-2">let total = 0;</u>').replace(/for \(let i = 0; i < items\.length; i\+\+\)/g, '<u class="decoration-accent-green decoration-2">for (let i = 0; i < items.length; i++)</u>').replace(/if \(items\[i\]\.price > 0\)/g, '<u class="decoration-accent-green decoration-2">if (items[i].price > 0)</u>').replace(/return total;/g, '<u class="decoration-accent-green decoration-2">return total;</u>').replace(/const myArray = \[1, 2, 3\];/g, '<u class="decoration-accent-green decoration-2">const myArray = [1, 2, 3];</u>').replace(/name: "John",/g, '<u class="decoration-accent-green decoration-2">name: "John",</u>') }} />
+                )}
+              </pre>
             </div>
-          </motion.div>
+            <p className="text-gray-600 dark:text-text-secondary text-sm mt-3">
+              {codeData ? (
+                `Displaying your saved code from ${fileName}`
+              ) : (
+                <>
+                  <u className="decoration-accent-green decoration-2">Underlined parts</u> indicate corrections made to fix syntax errors. All issues including semicolons, brackets, and punctuation have been resolved.
+                </>
+              )}
+            </p>
+          </div>
+        </motion.div>
 
-          {/* Error Analysis */}
-          <motion.div
-            initial={{ x: 20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="bg-dark-surface border border-dark-border rounded-xl overflow-hidden shadow-lg"
-          >
-            <div className="bg-gradient-to-r from-accent-teal to-accent-cyan px-4 py-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <AlertCircle className="w-5 h-5 text-white" />
-                <h2 className="text-lg font-semibold text-white">Error Analysis</h2>
-              </div>
-              <div className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
-                <span className="text-white font-semibold text-sm">{totalErrors} issues</span>
-              </div>
+        {/* Error Analysis - Full Width */}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-xl overflow-hidden shadow-lg mb-6"
+        >
+          <div className="bg-accent-teal px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-white" />
+              <h2 className="text-lg font-semibold text-white">Error Analysis</h2>
             </div>
+            <div className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
+              <span className="text-white font-semibold text-sm">{totalErrors} issues</span>
+            </div>
+          </div>
 
-            <div className="p-6 space-y-3 max-h-[500px] overflow-y-auto">
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {mockErrors.map((error, index) => (
                 <motion.div
                   key={error.category}
@@ -156,19 +169,18 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
                       : 'bg-accent-green/5 border-accent-green/30 hover:border-accent-green/50'
                   }`}
                 >
-                  <div className="flex items-start justify-between">
+                  <div className="flex items-start justify-between mb-3">
                     <div className="flex items-start gap-3 flex-1">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg ${
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg flex-shrink-0 ${
                         error.count > 0 ? 'bg-red-500/10 text-red-400' : 'bg-accent-green/10 text-accent-green'
                       }`}>
                         {error.icon}
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-semibold text-text-primary mb-1">{error.category}</h3>
-                        <p className="text-sm text-text-secondary">{error.description}</p>
+                        <h3 className="font-semibold text-gray-900 dark:text-text-primary mb-1">{error.category}</h3>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 ml-4">
+                    <div className="flex items-center gap-2 flex-shrink-0">
                       {error.count > 0 ? (
                         <span className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
                           {error.count}
@@ -178,20 +190,74 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
                       )}
                     </div>
                   </div>
+                  <p className="text-sm text-gray-600 dark:text-text-secondary mb-3">{error.description}</p>
+                  {error.count > 0 && (error as any).details && (error as any).details.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-light-border dark:border-dark-border space-y-3">
+                      {(error as any).details.map((detail: any, idx: number) => (
+                        <div key={idx} className="space-y-2">
+                          <button
+                            onClick={() => toggleError(`${error.category}-${idx}`)}
+                            className="w-full flex items-start gap-2 text-left hover:bg-light-elevated dark:hover:bg-dark-elevated/50 p-2 rounded-lg transition-colors"
+                          >
+                            {expandedErrors.has(`${error.category}-${idx}`) ? (
+                              <ChevronDown className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+                            ) : (
+                              <ChevronRight className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+                            )}
+                            <div className="flex-1">
+                              <p className="text-xs text-gray-600 dark:text-text-secondary leading-relaxed">
+                                <span className="font-semibold text-gray-900 dark:text-text-primary">Line {detail.line}:</span> {detail.message}
+                              </p>
+                            </div>
+                          </button>
+
+                          {expandedErrors.has(`${error.category}-${idx}`) && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="ml-6 space-y-3 overflow-hidden"
+                            >
+                              <div className="bg-light-elevated dark:bg-dark-elevated rounded-lg p-3 border border-red-500/20">
+                                <p className="text-xs font-semibold text-red-400 mb-2">Error Code Snippet:</p>
+                                <pre className="text-xs font-mono text-gray-900 dark:text-text-primary bg-light-bg dark:bg-dark-bg p-2 rounded overflow-x-auto">
+                                  {detail.codeSnippet}
+                                </pre>
+                              </div>
+
+                              <div className="bg-light-elevated dark:bg-dark-elevated rounded-lg p-3 border border-accent-green/20">
+                                <p className="text-xs font-semibold text-accent-green mb-2">Correction:</p>
+                                <pre className="text-xs font-mono text-gray-900 dark:text-text-primary bg-light-bg dark:bg-dark-bg p-2 rounded overflow-x-auto">
+                                  {detail.correction}
+                                </pre>
+                              </div>
+
+                              <div className="bg-light-elevated dark:bg-dark-elevated rounded-lg p-3 border border-accent-cyan/20">
+                                <p className="text-xs font-semibold text-accent-cyan mb-2">Explanation:</p>
+                                <p className="text-xs text-gray-600 dark:text-text-secondary leading-relaxed">
+                                  {detail.explanation}
+                                </p>
+                              </div>
+                            </motion.div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </motion.div>
               ))}
             </div>
-          </motion.div>
-        </div>
+          </div>
+        </motion.div>
 
         {/* Recommendations - Full Width */}
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="bg-dark-surface border border-dark-border rounded-xl overflow-hidden shadow-lg"
+          className="bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-xl overflow-hidden shadow-lg"
         >
-          <div className="bg-gradient-to-r from-accent-green to-accent-cyan px-4 py-3 flex items-center gap-2">
+          <div className="bg-accent-green px-4 py-3 flex items-center gap-2">
             <Lightbulb className="w-5 h-5 text-white" />
             <h2 className="text-lg font-semibold text-white">AI Recommendations</h2>
           </div>
@@ -206,10 +272,10 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
                   transition={{ delay: 0.5 + index * 0.1 }}
                   className="flex items-start gap-3 p-4 rounded-lg bg-accent-green/5 border border-accent-green/20 hover:bg-accent-green/10 hover:border-accent-green/40 transition-all"
                 >
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent-green to-accent-cyan text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-accent-green text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
                     {index + 1}
                   </div>
-                  <p className="text-text-primary text-sm leading-relaxed">{recommendation}</p>
+                  <p className="text-gray-900 dark:text-text-primary text-sm leading-relaxed">{recommendation}</p>
                 </motion.div>
               ))}
             </div>

@@ -44,7 +44,7 @@ export default function SecurityAlert() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-dark-surface rounded-xl shadow-2xl border border-dark-border w-full max-w-2xl z-50 max-h-[90vh] overflow-y-auto"
+              className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-light-surface dark:bg-dark-surface rounded-xl shadow-2xl border border-light-border dark:border-dark-border w-full max-w-2xl z-50 max-h-[90vh] overflow-y-auto"
             >
               <div className="bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 flex items-center justify-between rounded-t-xl">
                 <div className="flex items-center gap-3">
@@ -67,7 +67,7 @@ export default function SecurityAlert() {
                     <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
                     <div>
                       <h3 className="font-semibold text-red-400 mb-1">Critical Warning</h3>
-                      <p className="text-sm text-text-secondary">
+                      <p className="text-sm text-gray-600 dark:text-text-secondary">
                         Your code contains sensitive information that should never be hardcoded or committed to version control.
                       </p>
                     </div>
@@ -75,16 +75,16 @@ export default function SecurityAlert() {
                 </div>
 
                 <div className="space-y-4">
-                  <div className="flex items-start gap-4 p-4 bg-dark-elevated border border-dark-border rounded-lg">
+                  <div className="flex items-start gap-4 p-4 bg-light-elevated dark:bg-dark-elevated border border-light-border dark:border-dark-border rounded-lg">
                     <div className="w-10 h-10 bg-accent-cyan/10 rounded-lg flex items-center justify-center flex-shrink-0">
                       <Lock className="w-5 h-5 text-accent-cyan" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-text-primary mb-2">Never Hardcode Credentials</h4>
-                      <p className="text-sm text-text-secondary mb-2">
+                      <h4 className="font-semibold text-gray-900 dark:text-text-primary mb-2">Never Hardcode Credentials</h4>
+                      <p className="text-sm text-gray-600 dark:text-text-secondary mb-2">
                         Passwords, API keys, and tokens should never be directly written in your code.
                       </p>
-                      <ul className="text-sm text-text-secondary list-disc list-inside space-y-1">
+                      <ul className="text-sm text-gray-600 dark:text-text-secondary list-disc list-inside space-y-1">
                         <li>Use environment variables instead</li>
                         <li>Store secrets in secure vaults</li>
                         <li>Use configuration management systems</li>
@@ -92,16 +92,16 @@ export default function SecurityAlert() {
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-4 p-4 bg-dark-elevated border border-dark-border rounded-lg">
+                  <div className="flex items-start gap-4 p-4 bg-light-elevated dark:bg-dark-elevated border border-light-border dark:border-dark-border rounded-lg">
                     <div className="w-10 h-10 bg-accent-purple/10 rounded-lg flex items-center justify-center flex-shrink-0">
                       <Eye className="w-5 h-5 text-accent-purple" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-text-primary mb-2">Protect User Privacy</h4>
-                      <p className="text-sm text-text-secondary mb-2">
+                      <h4 className="font-semibold text-gray-900 dark:text-text-primary mb-2">Protect User Privacy</h4>
+                      <p className="text-sm text-gray-600 dark:text-text-secondary mb-2">
                         Personal information like emails and phone numbers need special handling.
                       </p>
-                      <ul className="text-sm text-text-secondary list-disc list-inside space-y-1">
+                      <ul className="text-sm text-gray-600 dark:text-text-secondary list-disc list-inside space-y-1">
                         <li>Encrypt sensitive data at rest</li>
                         <li>Use HTTPS for data transmission</li>
                         <li>Implement proper access controls</li>
@@ -109,16 +109,16 @@ export default function SecurityAlert() {
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-4 p-4 bg-dark-elevated border border-dark-border rounded-lg">
+                  <div className="flex items-start gap-4 p-4 bg-light-elevated dark:bg-dark-elevated border border-light-border dark:border-dark-border rounded-lg">
                     <div className="w-10 h-10 bg-accent-green/10 rounded-lg flex items-center justify-center flex-shrink-0">
                       <FileText className="w-5 h-5 text-accent-green" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-text-primary mb-2">Use .gitignore Properly</h4>
-                      <p className="text-sm text-text-secondary mb-2">
+                      <h4 className="font-semibold text-gray-900 dark:text-text-primary mb-2">Use .gitignore Properly</h4>
+                      <p className="text-sm text-gray-600 dark:text-text-secondary mb-2">
                         Prevent sensitive files from being committed to your repository.
                       </p>
-                      <ul className="text-sm text-text-secondary list-disc list-inside space-y-1">
+                      <ul className="text-sm text-gray-600 dark:text-text-secondary list-disc list-inside space-y-1">
                         <li>Add .env files to .gitignore</li>
                         <li>Never commit config files with secrets</li>
                         <li>Review changes before committing</li>
@@ -128,8 +128,8 @@ export default function SecurityAlert() {
                 </div>
 
                 <div className="bg-accent-teal/5 border border-accent-teal/20 p-4 rounded-lg">
-                  <h4 className="font-semibold text-text-primary mb-2">Quick Fix Checklist</h4>
-                  <ul className="space-y-2 text-sm text-text-secondary">
+                  <h4 className="font-semibold text-gray-900 dark:text-text-primary mb-2">Quick Fix Checklist</h4>
+                  <ul className="space-y-2 text-sm text-gray-600 dark:text-text-secondary">
                     <li className="flex items-start gap-2">
                       <span className="text-accent-teal font-bold">1.</span>
                       <span>Move all sensitive data to environment variables</span>

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Calendar, Code2, Eye } from 'lucide-react';
+import { Calendar, Bot, Eye } from 'lucide-react';
 
 interface HistoryItem {
   id: string;
@@ -50,8 +50,8 @@ export default function HistoryList({ history }: HistoryListProps) {
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                      <Code2 className="w-5 h-5 text-white" />
+                    <div className="w-10 h-10 rounded-lg bg-accent-teal flex items-center justify-center">
+                      <Bot className="w-5 h-5 text-white" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">

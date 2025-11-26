@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Bot, Sparkles, Code2 } from 'lucide-react';
+import { Send, Bot, User } from 'lucide-react';
 
 interface Message {
   id: number;
@@ -49,32 +49,24 @@ export default function ChatbotPage() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-bg pb-24 flex flex-col">
+    <div className="min-h-screen bg-light-bg dark:bg-dark-bg transition-colors duration-300 pb-24 flex flex-col">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-dark-surface border-b border-dark-border px-6 py-4 shadow-lg"
+        className="bg-light-surface dark:bg-dark-surface border-b border-light-border dark:border-dark-border px-6 py-4 shadow-lg"
       >
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-12 h-12 bg-gradient-to-br from-accent-teal to-accent-cyan rounded-xl flex items-center justify-center shadow-glow">
+              <div className="w-12 h-12 bg-accent-teal rounded-xl flex items-center justify-center shadow-glow">
                 <Bot className="w-7 h-7 text-white" />
               </div>
               <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-accent-green rounded-full border-2 border-dark-surface"></div>
             </div>
             <div>
-              <h1 className="text-xl font-bold text-text-primary">ABCode AI Assistant</h1>
-              <p className="text-sm text-text-secondary flex items-center gap-1">
-                <span className="w-2 h-2 bg-accent-green rounded-full animate-pulse"></span>
-                Online & Ready
-              </p>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-text-primary">ABCode AI Assistant</h1>
             </div>
-          </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-dark-elevated rounded-lg border border-dark-border">
-            <Sparkles className="w-4 h-4 text-accent-purple" />
-            <span className="text-sm text-text-secondary">AI-Powered</span>
           </div>
         </div>
       </motion.div>
@@ -96,13 +88,13 @@ export default function ChatbotPage() {
                   {/* Avatar */}
                   <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${
                     message.sender === 'bot'
-                      ? 'bg-gradient-to-br from-accent-teal to-accent-cyan shadow-glow'
-                      : 'bg-dark-elevated border border-dark-border'
+                      ? 'bg-accent-teal shadow-glow'
+                      : 'bg-light-elevated dark:bg-dark-elevated border border-light-border dark:border-dark-border'
                   }`}>
                     {message.sender === 'bot' ? (
                       <Bot className="w-5 h-5 text-white" />
                     ) : (
-                      <Code2 className="w-5 h-5 text-accent-teal" />
+                      <User className="w-5 h-5 text-accent-teal" />
                     )}
                   </div>
 
@@ -112,8 +104,8 @@ export default function ChatbotPage() {
                       whileHover={{ scale: 1.02 }}
                       className={`rounded-2xl px-5 py-3 ${
                         message.sender === 'user'
-                          ? 'bg-gradient-to-br from-accent-teal to-accent-cyan text-white shadow-glow'
-                          : 'bg-dark-surface border border-dark-border text-text-primary'
+                          ? 'bg-accent-teal text-white shadow-glow'
+                          : 'bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border text-gray-900 dark:text-text-primary'
                       }`}
                     >
                       <p className="text-sm leading-relaxed whitespace-pre-line">{message.text}</p>
@@ -135,10 +127,10 @@ export default function ChatbotPage() {
               exit={{ opacity: 0 }}
               className="flex gap-3"
             >
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-teal to-accent-cyan flex items-center justify-center shadow-glow">
+              <div className="w-10 h-10 rounded-xl bg-accent-teal flex items-center justify-center shadow-glow">
                 <Bot className="w-5 h-5 text-white" />
               </div>
-              <div className="bg-dark-surface border border-dark-border rounded-2xl px-5 py-3">
+              <div className="bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl px-5 py-3">
                 <div className="flex gap-1.5">
                   <div className="w-2 h-2 bg-accent-teal rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
                   <div className="w-2 h-2 bg-accent-teal rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
@@ -151,10 +143,10 @@ export default function ChatbotPage() {
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-dark-border bg-dark-surface px-4 py-4 shadow-2xl">
+      <div className="border-t border-light-border dark:border-dark-border bg-light-surface dark:bg-dark-surface px-4 py-4 shadow-2xl">
         <div className="max-w-4xl mx-auto">
           <div className="flex gap-3 items-end">
-            <div className="flex-1 bg-dark-elevated border border-dark-border rounded-2xl overflow-hidden focus-within:border-accent-teal focus-within:ring-2 focus-within:ring-accent-teal/20 transition-all">
+            <div className="flex-1 bg-light-elevated dark:bg-dark-elevated border border-light-border dark:border-dark-border rounded-2xl overflow-hidden focus-within:border-accent-teal focus-within:ring-2 focus-within:ring-accent-teal/20 transition-all">
               <textarea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
@@ -166,7 +158,7 @@ export default function ChatbotPage() {
                 }}
                 placeholder="Ask me anything about your code..."
                 rows={1}
-                className="w-full px-5 py-4 bg-transparent text-text-primary placeholder-text-tertiary resize-none focus:outline-none"
+                className="w-full px-5 py-4 bg-transparent text-gray-900 dark:text-text-primary placeholder-text-tertiary resize-none focus:outline-none"
                 style={{ maxHeight: '150px' }}
               />
             </div>
@@ -176,7 +168,7 @@ export default function ChatbotPage() {
               whileTap={{ scale: 0.95 }}
               onClick={handleSend}
               disabled={!input.trim()}
-              className="w-14 h-14 bg-gradient-to-br from-accent-teal to-accent-cyan rounded-2xl flex items-center justify-center shadow-glow disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="w-14 h-14 bg-accent-teal rounded-2xl flex items-center justify-center shadow-glow disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               <Send className="w-5 h-5 text-white" />
             </motion.button>

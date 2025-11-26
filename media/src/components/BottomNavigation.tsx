@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Code2, User, MessageCircle } from 'lucide-react';
+import { Bot, User, MessageCircle, TrendingUp } from 'lucide-react';
 
-type Page = 'analysis' | 'profile' | 'chatbot';
+type Page = 'analysis' | 'chatbot' | 'progress' | 'profile';
 
 interface BottomNavigationProps {
   currentPage: Page;
@@ -16,16 +16,9 @@ export default function BottomNavigation({ currentPage, onNavigate }: BottomNavi
     {
       id: 'analysis' as Page,
       label: 'Analysis',
-      icon: Code2,
+      icon: Bot,
       preview: 'View code analysis, errors, and AI recommendations',
       color: 'accent-teal',
-    },
-    {
-      id: 'profile' as Page,
-      label: 'Profile',
-      icon: User,
-      preview: 'Manage your account settings and preferences',
-      color: 'accent-cyan',
     },
     {
       id: 'chatbot' as Page,
@@ -33,6 +26,20 @@ export default function BottomNavigation({ currentPage, onNavigate }: BottomNavi
       icon: MessageCircle,
       preview: 'Chat with ABCode AI assistant for help',
       color: 'accent-green',
+    },
+    {
+      id: 'progress' as Page,
+      label: 'Progress',
+      icon: TrendingUp,
+      preview: 'Track your improvement and error trends over time',
+      color: 'accent-purple',
+    },
+    {
+      id: 'profile' as Page,
+      label: 'Profile',
+      icon: User,
+      preview: 'Manage your account settings and preferences',
+      color: 'accent-cyan',
     },
   ];
 
@@ -75,15 +82,6 @@ export default function BottomNavigation({ currentPage, onNavigate }: BottomNavi
                     <div className="h-2 bg-accent-teal/20 rounded w-2/3"></div>
                   </div>
                 )}
-                {hoveredPage === 'profile' && (
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-accent-cyan/20 rounded-full"></div>
-                    <div className="space-y-1 flex-1">
-                      <div className="h-2 bg-accent-cyan/20 rounded w-2/3"></div>
-                      <div className="h-2 bg-accent-cyan/20 rounded w-1/2"></div>
-                    </div>
-                  </div>
-                )}
                 {hoveredPage === 'chatbot' && (
                   <div className="space-y-2">
                     <div className="flex gap-2 justify-end">
@@ -91,6 +89,23 @@ export default function BottomNavigation({ currentPage, onNavigate }: BottomNavi
                     </div>
                     <div className="flex gap-2">
                       <div className="h-2 bg-accent-green/20 rounded w-2/3"></div>
+                    </div>
+                  </div>
+                )}
+                {hoveredPage === 'progress' && (
+                  <div className="flex items-end gap-1 h-12">
+                    <div className="w-full h-8 bg-accent-purple/20 rounded-t"></div>
+                    <div className="w-full h-5 bg-accent-purple/20 rounded-t"></div>
+                    <div className="w-full h-10 bg-accent-purple/20 rounded-t"></div>
+                    <div className="w-full h-6 bg-accent-purple/20 rounded-t"></div>
+                  </div>
+                )}
+                {hoveredPage === 'profile' && (
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-accent-cyan/20 rounded-full"></div>
+                    <div className="space-y-1 flex-1">
+                      <div className="h-2 bg-accent-cyan/20 rounded w-2/3"></div>
+                      <div className="h-2 bg-accent-cyan/20 rounded w-1/2"></div>
                     </div>
                   </div>
                 )}
@@ -122,7 +137,7 @@ export default function BottomNavigation({ currentPage, onNavigate }: BottomNavi
                   whileTap={{ scale: 0.95 }}
                   className={`relative flex flex-col items-center gap-1 px-6 py-3 rounded-xl transition-all ${
                     isActive
-                      ? 'bg-gradient-to-br from-accent-teal to-accent-cyan shadow-glow'
+                      ? 'bg-accent-teal shadow-glow'
                       : 'hover:bg-dark-elevated'
                   }`}
                 >
@@ -130,7 +145,7 @@ export default function BottomNavigation({ currentPage, onNavigate }: BottomNavi
                   {isActive && (
                     <motion.div
                       layoutId="activeTab"
-                      className="absolute inset-0 bg-gradient-to-br from-accent-teal to-accent-cyan rounded-xl"
+                      className="absolute inset-0 bg-accent-teal rounded-xl"
                       transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                     />
                   )}
