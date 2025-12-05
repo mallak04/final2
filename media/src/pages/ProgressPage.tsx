@@ -1,23 +1,54 @@
 import { motion } from 'framer-motion';
 import { TrendingDown, TrendingUp, BarChart3, Award, PieChart, BarChart, BarChartHorizontal } from 'lucide-react';
-import { mockProgressData, mockHistory, mockMonthlyErrorBreakdown } from '../data/mockData';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { fetchProgressData, fetchAnalysisHistory, fetchMonthlyErrorBreakdown, ProgressData, HistoryItem, MonthlyErrorBreakdown } from '../services/apiService';
 
 export default function ProgressPage() {
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
+  const [progressData, setProgressData] = useState<ProgressData[]>([]);
+  const [historyData, setHistoryData] = useState<HistoryItem[]>([]);
+  const [monthlyBreakdown, setMonthlyBreakdown] = useState<MonthlyErrorBreakdown[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const progressData = mockProgressData;
-  const maxErrors = Math.max(...progressData.map((d) => d.errors));
-  const minErrors = Math.min(...progressData.map((d) => d.errors));
-  const avgErrors = (progressData.reduce((sum, d) => sum + d.errors, 0) / progressData.length).toFixed(1);
+  // TODO: Replace with actual user ID from authentication
+  const userId = "test-user";
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        const [progress, history, breakdown] = await Promise.all([
+          fetchProgressData(userId),
+          fetchAnalysisHistory(userId),
+          fetchMonthlyErrorBreakdown(userId)
+        ]);
+
+        setProgressData(progress);
+        setHistoryData(history);
+        setMonthlyBreakdown(breakdown);
+      } catch (error) {
+        console.error('Error loading progress data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [userId]);
+
+  const maxErrors = progressData.length > 0 ? Math.max(...progressData.map((d) => d.errors)) : 0;
+  const minErrors = progressData.length > 0 ? Math.min(...progressData.map((d) => d.errors)) : 0;
+  const avgErrors = progressData.length > 0
+    ? (progressData.reduce((sum, d) => sum + d.errors, 0) / progressData.length).toFixed(1)
+    : '0';
 
   const improvement = progressData.length >= 2
     ? ((progressData[0].errors - progressData[progressData.length - 1].errors) / progressData[0].errors * 100).toFixed(0)
     : 0;
 
-  const totalAnalyses = mockHistory.length;
-  const totalErrorsHistory = mockHistory.reduce((sum, item) => sum + item.total_errors, 0);
+  const totalAnalyses = historyData.length;
+  const totalErrorsHistory = historyData.reduce((sum, item) => sum + item.total_errors, 0);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -33,6 +64,17 @@ export default function ProgressPage() {
     "Missing/Wrong Colon": "#c4a572",
     "Reversed Words": "#7daa92",
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-light-bg dark:bg-dark-bg transition-colors duration-300 pb-24 px-4 pt-8 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-accent-teal border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-text-secondary">Loading progress data...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-light-bg dark:bg-dark-bg transition-colors duration-300 pb-24 px-4 pt-8">
@@ -151,7 +193,7 @@ export default function ProgressPage() {
 
             {/* Stacked Percentage Bars */}
             <div className="space-y-6">
-              {mockMonthlyErrorBreakdown.map((monthData, monthIndex) => {
+              {monthlyBreakdown.map((monthData, monthIndex) => {
                 const percentages = Object.entries(monthData.categories).map(([category, count]) => ({
                   category,
                   count,
