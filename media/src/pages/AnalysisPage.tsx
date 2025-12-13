@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { AlertCircle, CheckCircle, Lightbulb, CheckSquare, ChevronDown, ChevronRight } from 'lucide-react';
+import { AlertCircle, CheckCircle, Lightbulb, CheckSquare, ChevronDown, ChevronRight, Copy, Check } from 'lucide-react';
 import { mockCodeSample, mockCorrectedCode, mockErrors, mockRecommendations } from '../data/mockData';
-import SecurityAlert from '../components/SecurityAlert';
 
 interface CodeData {
   code: string;
@@ -16,6 +15,7 @@ interface AnalysisPageProps {
 
 export default function AnalysisPage({ codeData }: AnalysisPageProps) {
   const [expandedErrors, setExpandedErrors] = useState<Set<string>>(new Set());
+  const [copied, setCopied] = useState(false);
 
   const toggleError = (category: string) => {
     const newExpanded = new Set(expandedErrors);
@@ -25,6 +25,14 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
       newExpanded.add(category);
     }
     setExpandedErrors(newExpanded);
+  };
+
+  const handleCopy = () => {
+    const codeToCopy = codeData?.code || mockCorrectedCode;
+    navigator.clipboard.writeText(codeToCopy).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
   };
 
   // Use real code if available, otherwise fall back to mock data
@@ -71,15 +79,32 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
           whileHover={{ scale: 1.01 }}
           className="bg-light-surface dark:bg-dark-surface border-2 border-light-border dark:border-dark-border rounded-xl overflow-hidden shadow-lg mb-6 hover:border-accent-green transition-all"
         >
-          <div className="bg-accent-green px-4 py-3 flex items-center gap-2">
-            <div>
+          <div className="bg-accent-green px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
               <CheckSquare className="w-5 h-5 text-white" />
+              <h2 className="text-lg font-semibold text-white">Corrected Code</h2>
             </div>
-            <h2 className="text-lg font-semibold text-white">Corrected Code</h2>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleCopy}
+              className="px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg flex items-center gap-2 transition-colors"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-4 h-4 text-white" />
+                  <span className="text-white text-sm font-medium">Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4 text-white" />
+                  <span className="text-white text-sm font-medium">Copy</span>
+                </>
+              )}
+            </motion.button>
           </div>
 
           <div className="p-6">
-            <SecurityAlert />
             <div className="bg-dark-elevated dark:bg-dark-elevated bg-light-elevated border border-accent-green/30 rounded-lg p-4 overflow-x-auto">
               <pre className="text-sm text-gray-900 dark:text-text-primary leading-relaxed" style={{ fontFamily: 'Consolas, "Courier New", monospace' }}>
                 {codeData ? (
