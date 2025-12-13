@@ -95,7 +95,7 @@ await saveCodeAnalysis({
   indentation_errors: 0,
   case_spelling_errors: 1,
   colon_errors: 1,
-  reversed_word_errors: 0,
+  other_errors: 0,
   recommendations: "Use semicolons consistently"
 });
 ```

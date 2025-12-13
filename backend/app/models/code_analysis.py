@@ -17,5 +17,5 @@ class CodeAnalysis(Base):
     indentation_errors = Column(Integer, default=0)
     case_spelling_errors = Column(Integer, default=0)
     colon_errors = Column(Integer, default=0)
-    reversed_word_errors = Column(Integer, default=0)
+    other_errors = Column(Integer, default=0)
     recommendations = Column(Text, nullable=True)

@@ -88,7 +88,7 @@ The `code_analyses` table stores:
 - `indentation_errors` - Indentation errors count
 - `case_spelling_errors` - Case/spelling errors count
 - `colon_errors` - Colon errors count
-- `reversed_word_errors` - Reversed word errors count
+- `other_errors` - Other errors count
 - `recommendations` - JSON string of recommendations
 
 ## Frontend Integration

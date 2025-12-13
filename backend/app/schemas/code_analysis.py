@@ -12,7 +12,7 @@ class CodeAnalysisBase(BaseModel):
     indentation_errors: int = 0
     case_spelling_errors: int = 0
     colon_errors: int = 0
-    reversed_word_errors: int = 0
+    other_errors: int = 0
     recommendations: Optional[str] = None
 
 class CodeAnalysisCreate(CodeAnalysisBase):

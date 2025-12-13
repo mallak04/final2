@@ -62,7 +62,7 @@ export default function ProgressPage() {
     "Indentation": "#7ea3cc",
     "Case & Spelling": "#6b9e9e",
     "Missing/Wrong Colon": "#c4a572",
-    "Reversed Words": "#7daa92",
+    "Other Errors": "#7daa92",
   };
 
   if (loading) {

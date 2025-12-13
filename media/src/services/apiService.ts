@@ -13,7 +13,7 @@ export interface MonthlyErrorBreakdown {
     "Indentation": number;
     "Case & Spelling": number;
     "Missing/Wrong Colon": number;
-    "Reversed Words": number;
+    "Other Errors": number;
   };
   total: number;
 }
@@ -36,7 +36,7 @@ export interface CodeAnalysisCreate {
   indentation_errors: number;
   case_spelling_errors: number;
   colon_errors: number;
-  reversed_word_errors: number;
+  other_errors: number;
   recommendations?: string;
 }
 

@@ -14,7 +14,7 @@
       - `indentation_errors` (integer) - Count of indentation errors
       - `case_spelling_errors` (integer) - Count of case/spelling errors
       - `colon_errors` (integer) - Count of missing/wrong colon errors
-      - `reversed_word_errors` (integer) - Count of reversed word errors
+      - `other_errors` (integer) - Count of other errors
       - `recommendations` (text) - AI-generated recommendations for improvement
       
   2. Security
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS code_analyses (
   indentation_errors integer DEFAULT 0,
   case_spelling_errors integer DEFAULT 0,
   colon_errors integer DEFAULT 0,
-  reversed_word_errors integer DEFAULT 0,
+  other_errors integer DEFAULT 0,
   recommendations text DEFAULT ''
 );
 

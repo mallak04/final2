@@ -81,13 +81,13 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
           <div className="p-6">
             <SecurityAlert />
             <div className="bg-dark-elevated dark:bg-dark-elevated bg-light-elevated border border-accent-green/30 rounded-lg p-4 overflow-x-auto">
-              <pre className="text-sm text-gray-900 dark:text-text-primary leading-relaxed" style={{ fontFamily: '"Fira Code", "JetBrains Mono", "Source Code Pro", "Roboto Mono", Consolas, Monaco, monospace' }}>
+              <pre className="text-sm text-gray-900 dark:text-text-primary leading-relaxed" style={{ fontFamily: 'Consolas, "Courier New", monospace' }}>
                 {codeData ? (
                   // Show actual saved code when available
                   correctedCode
                 ) : (
                   // Show mock corrected code with highlights when using mock data
-                  <code dangerouslySetInnerHTML={{ __html: mockCorrectedCode.replace(/let total = 0;/g, '<u class="decoration-accent-green decoration-2">let total = 0;</u>').replace(/for \(let i = 0; i < items\.length; i\+\+\)/g, '<u class="decoration-accent-green decoration-2">for (let i = 0; i < items.length; i++)</u>').replace(/if \(items\[i\]\.price > 0\)/g, '<u class="decoration-accent-green decoration-2">if (items[i].price > 0)</u>').replace(/return total;/g, '<u class="decoration-accent-green decoration-2">return total;</u>').replace(/const myArray = \[1, 2, 3\];/g, '<u class="decoration-accent-green decoration-2">const myArray = [1, 2, 3];</u>').replace(/name: "John",/g, '<u class="decoration-accent-green decoration-2">name: "John",</u>') }} />
+                  <code dangerouslySetInnerHTML={{ __html: mockCorrectedCode.replace(/let total = 0;/g, '<u class="decoration-accent-green decoration-2 decoration-wavy">let total = 0;</u>').replace(/for \(let i = 0; i < items\.length; i\+\+\)/g, '<u class="decoration-accent-green decoration-2 decoration-wavy">for (let i = 0; i < items.length; i++)</u>').replace(/if \(items\[i\]\.price > 0\)/g, '<u class="decoration-accent-green decoration-2 decoration-wavy">if (items[i].price > 0)</u>').replace(/return total;/g, '<u class="decoration-accent-green decoration-2 decoration-wavy">return total;</u>').replace(/const myArray = \[1, 2, 3\];/g, '<u class="decoration-accent-green decoration-2 decoration-wavy">const myArray = [1, 2, 3];</u>').replace(/name: "John",/g, '<u class="decoration-accent-green decoration-2 decoration-wavy">name: "John",</u>') }} />
                 )}
               </pre>
             </div>
@@ -96,7 +96,7 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
                 `Displaying your saved code from ${fileName}`
               ) : (
                 <>
-                  <u className="decoration-accent-green decoration-2">Underlined parts</u> indicate corrections made to fix syntax errors. All issues including semicolons, brackets, and punctuation have been resolved.
+                  <u className="decoration-accent-green decoration-2 decoration-wavy">Underlined parts</u> indicate corrections made to fix syntax errors. All issues including semicolons, brackets, and punctuation have been resolved.
                 </>
               )}
             </p>

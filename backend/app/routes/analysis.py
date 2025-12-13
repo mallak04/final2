@@ -61,7 +61,7 @@ def get_monthly_breakdown(user_id: str, db: Session = Depends(get_db)):
         "Indentation": 0,
         "Case & Spelling": 0,
         "Missing/Wrong Colon": 0,
-        "Reversed Words": 0,
+        "Other Errors": 0,
     })
 
     for analysis in analyses:
@@ -71,7 +71,7 @@ def get_monthly_breakdown(user_id: str, db: Session = Depends(get_db)):
         monthly_data[month_key]["Indentation"] += analysis.indentation_errors
         monthly_data[month_key]["Case & Spelling"] += analysis.case_spelling_errors
         monthly_data[month_key]["Missing/Wrong Colon"] += analysis.colon_errors
-        monthly_data[month_key]["Reversed Words"] += analysis.reversed_word_errors
+        monthly_data[month_key]["Other Errors"] += analysis.other_errors
 
     result = []
     for month, categories in monthly_data.items():
