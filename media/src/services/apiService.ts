@@ -46,6 +46,13 @@ export interface UserStats {
   day_streak: number;
 }
 
+export interface AnalysisResult {
+  correctedCode: string;
+  corrections: string[];
+  errors?: any[];
+  recommendations?: string[];
+}
+
 // Fetch progress data for a user
 export async function fetchProgressData(userId: string): Promise<ProgressData[]> {
   try {
@@ -135,5 +142,30 @@ export async function fetchUserStats(userId: string): Promise<UserStats | null> 
   } catch (error) {
     console.error('Error fetching user stats:', error);
     return null;
+  }
+}
+
+// Analyze code with AI
+// Backend should implement this endpoint: POST /api/analyze
+// Expected request body: { code: string, language: string }
+// Expected response: { correctedCode: string, corrections: string[], errors?: any[], recommendations?: string[] }
+export async function analyzeCode(code: string, language: string): Promise<AnalysisResult> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/analyze`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code, language }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to analyze code');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error analyzing code:', error);
+    throw error; // Re-throw to let the component handle the error
   }
 }

@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { AlertCircle, CheckCircle, Lightbulb, CheckSquare, ChevronDown, ChevronRight, Copy, Check } from 'lucide-react';
 import { mockCodeSample, mockCorrectedCode, mockErrors, mockRecommendations } from '../data/mockData';
+import { analyzeCode } from '../services/apiService';
 
 interface CodeData {
   code: string;
@@ -13,9 +14,53 @@ interface AnalysisPageProps {
   codeData: CodeData | null;
 }
 
+// Helper function to apply underlining to corrected parts
+function applyUnderlining(code: string, corrections: string[]): string {
+  let highlightedCode = code;
+
+  corrections.forEach(correction => {
+    // Escape special regex characters
+    const escapedCorrection = correction.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // Apply underline styling
+    highlightedCode = highlightedCode.replace(
+      new RegExp(escapedCorrection, 'g'),
+      `<u class="decoration-accent-green decoration-2 decoration-wavy">${correction}</u>`
+    );
+  });
+
+  return highlightedCode;
+}
+
 export default function AnalysisPage({ codeData }: AnalysisPageProps) {
   const [expandedErrors, setExpandedErrors] = useState<Set<string>>(new Set());
   const [copied, setCopied] = useState(false);
+
+  // State for AI analysis data
+  const [aiCorrections, setAiCorrections] = useState<string[] | null>(null);
+  const [correctedCodeFromAI, setCorrectedCodeFromAI] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  // Fetch AI analysis when code is available
+  useEffect(() => {
+    if (codeData?.code) {
+      setIsAnalyzing(true);
+      analyzeCode(codeData.code, codeData.language)
+        .then((result) => {
+          // Backend should return: { correctedCode: string, corrections: string[] }
+          setCorrectedCodeFromAI(result.correctedCode || null);
+          setAiCorrections(result.corrections || null);
+        })
+        .catch((error) => {
+          console.error('Failed to analyze code:', error);
+          // Fall back to displaying original code without AI analysis
+          setCorrectedCodeFromAI(null);
+          setAiCorrections(null);
+        })
+        .finally(() => {
+          setIsAnalyzing(false);
+        });
+    }
+  }, [codeData]);
 
   const toggleError = (category: string) => {
     const newExpanded = new Set(expandedErrors);
@@ -37,8 +82,13 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
 
   // Use real code if available, otherwise fall back to mock data
   const displayCode = codeData?.code || mockCodeSample;
-  const correctedCode = codeData?.code ? codeData.code : mockCorrectedCode;
   const fileName = codeData?.fileName || 'Sample Code';
+
+  // Determine which corrected code to display (priority: AI > real code > mock)
+  const correctedCode = correctedCodeFromAI || codeData?.code || mockCorrectedCode;
+
+  // Determine which corrections to apply for underlining
+  const correctionsToApply = aiCorrections || null;
 
   // Calculate stats
   const totalErrors = mockErrors.reduce((sum, error) => sum + error.count, 0);
@@ -107,23 +157,20 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
           <div className="p-6">
             <div className="bg-dark-elevated dark:bg-dark-elevated bg-light-elevated border border-accent-green/30 rounded-lg p-4 overflow-x-auto">
               <pre className="text-sm text-gray-900 dark:text-text-primary leading-relaxed" style={{ fontFamily: 'Consolas, "Courier New", monospace' }}>
-                {codeData ? (
-                  // Show actual saved code when available
+                {correctionsToApply ? (
+                  // Apply AI corrections with underlining
+                  <code dangerouslySetInnerHTML={{ __html: applyUnderlining(correctedCode, correctionsToApply) }} />
+                ) : codeData ? (
+                  // Show real code without underlining (AI hasn't responded yet or no corrections)
                   correctedCode
                 ) : (
-                  // Show mock corrected code with highlights when using mock data
+                  // Show mock corrected code with hardcoded highlights as fallback
                   <code dangerouslySetInnerHTML={{ __html: mockCorrectedCode.replace(/let total = 0;/g, '<u class="decoration-accent-green decoration-2 decoration-wavy">let total = 0;</u>').replace(/for \(let i = 0; i < items\.length; i\+\+\)/g, '<u class="decoration-accent-green decoration-2 decoration-wavy">for (let i = 0; i < items.length; i++)</u>').replace(/if \(items\[i\]\.price > 0\)/g, '<u class="decoration-accent-green decoration-2 decoration-wavy">if (items[i].price > 0)</u>').replace(/return total;/g, '<u class="decoration-accent-green decoration-2 decoration-wavy">return total;</u>').replace(/const myArray = \[1, 2, 3\];/g, '<u class="decoration-accent-green decoration-2 decoration-wavy">const myArray = [1, 2, 3];</u>').replace(/name: "John",/g, '<u class="decoration-accent-green decoration-2 decoration-wavy">name: "John",</u>') }} />
                 )}
               </pre>
             </div>
             <p className="text-gray-600 dark:text-text-secondary text-sm mt-3">
-              {codeData ? (
-                `Displaying your saved code from ${fileName}`
-              ) : (
-                <>
-                  <u className="decoration-accent-green decoration-2 decoration-wavy">Underlined parts</u> indicate corrections made to fix syntax errors. All issues including semicolons, brackets, and punctuation have been resolved.
-                </>
-              )}
+              <u className="decoration-accent-green decoration-2 decoration-wavy">Underlined parts</u> indicate corrections made to fix the errors in your code.
             </p>
           </div>
         </motion.div>
