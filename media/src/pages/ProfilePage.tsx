@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Mail, Calendar, Award, Settings, LogOut, X, Camera, Eye, EyeOff } from 'lucide-react';
+import { User, Mail, Calendar, Award, Settings, LogOut, X, Camera, Eye, EyeOff, Crown, ArrowUpCircle, Check, Zap, Shield, TrendingUp } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { useState, useRef, useEffect } from 'react';
 import { fetchUserStats } from '../services/apiService';
@@ -10,6 +10,7 @@ export default function ProfilePage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // TODO: Replace with actual user ID from authentication
@@ -251,15 +252,26 @@ export default function ProfilePage() {
                 </div>
               </div>
               <div className="flex items-center justify-between py-3 border-t border-light-border dark:border-dark-border">
-                <div>
-                  <h3 className="text-gray-600 dark:text-text-secondary text-sm mb-1">Account Type</h3>
-                  <p className="text-gray-900 dark:text-text-primary font-medium">Premium Developer</p>
+                <div className="flex items-center gap-3">
+                  <div>
+                    <h3 className="text-gray-600 dark:text-text-secondary text-sm mb-1">Account Type</h3>
+                    <div className="flex items-center gap-2">
+                      <p className="text-gray-900 dark:text-text-primary font-medium">Basic</p>
+                      <span className="px-2.5 py-0.5 bg-gray-400/20 text-gray-600 dark:text-text-secondary text-xs font-semibold rounded-full">
+                        FREE
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <span
-                  className="px-3 py-1 bg-accent-teal text-white text-xs font-semibold rounded-full"
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowUpgradeModal(true)}
+                  className="px-4 py-2 bg-gradient-to-r from-accent-teal to-accent-cyan text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-accent-teal/30 transition-all flex items-center gap-2"
                 >
-                  PRO
-                </span>
+                  <Crown className="w-4 h-4" />
+                  Upgrade to Pro
+                </motion.button>
               </div>
             </div>
           </div>
@@ -298,9 +310,9 @@ export default function ProfilePage() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+              className="fixed inset-0 z-50 flex items-start justify-center p-4 overflow-y-auto"
             >
-              <div className="bg-light-surface dark:bg-dark-surface border-2 border-light-border dark:border-dark-border rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="bg-light-surface dark:bg-dark-surface border-2 border-light-border dark:border-dark-border rounded-2xl shadow-2xl max-w-2xl w-full mt-8 mb-32">
                 {/* Modal Header */}
                 <div className="sticky top-0 bg-light-surface dark:bg-dark-surface border-b border-light-border dark:border-dark-border px-6 py-4 flex items-center justify-between z-10">
                   <h2 className="text-2xl font-bold text-gray-900 dark:text-text-primary">Edit Profile</h2>
@@ -439,6 +451,191 @@ export default function ProfilePage() {
                   >
                     Save Changes
                   </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Upgrade Modal */}
+      <AnimatePresence>
+        {showUpgradeModal && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowUpgradeModal(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+            />
+
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed inset-0 z-50 flex items-start justify-center p-4 overflow-y-auto"
+            >
+              <div className="bg-light-surface dark:bg-dark-surface border-2 border-light-border dark:border-dark-border rounded-2xl shadow-2xl max-w-4xl w-full mt-8 mb-32">
+                {/* Modal Header */}
+                <div className="sticky top-0 bg-gradient-to-r from-accent-teal to-accent-cyan px-6 py-6 flex items-center justify-between z-10">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                      <Crown className="w-7 h-7 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-white">Upgrade to Pro</h2>
+                      <p className="text-white/80 text-sm">Unlock premium features and boost your coding</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowUpgradeModal(false)}
+                    className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                  >
+                    <X className="w-5 h-5 text-white" />
+                  </button>
+                </div>
+
+                {/* Modal Body */}
+                <div className="p-8">
+                  {/* Pricing Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    {/* Basic Plan (Current) */}
+                    <motion.div
+                      initial={{ x: -20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.1 }}
+                      className="bg-light-elevated dark:bg-dark-elevated border-2 border-light-border dark:border-dark-border rounded-xl p-6"
+                    >
+                      <div className="mb-4">
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-text-primary mb-2">Basic</h3>
+                        <div className="flex items-baseline gap-2 mb-2">
+                          <span className="text-3xl font-bold text-gray-900 dark:text-text-primary">$0</span>
+                          <span className="text-gray-600 dark:text-text-secondary">/month</span>
+                        </div>
+                        <span className="px-2.5 py-1 bg-gray-400/20 text-gray-600 dark:text-text-secondary text-xs font-semibold rounded-full">
+                          CURRENT PLAN
+                        </span>
+                      </div>
+                      <ul className="space-y-3">
+                        <li className="flex items-start gap-2">
+                          <Check className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-600 dark:text-text-secondary">10 code analyses per month</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-600 dark:text-text-secondary">Basic error detection</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-600 dark:text-text-secondary">Progress tracking</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-600 dark:text-text-secondary">Community support</span>
+                        </li>
+                      </ul>
+                    </motion.div>
+
+                    {/* Pro Plan */}
+                    <motion.div
+                      initial={{ x: 20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.2 }}
+                      className="bg-gradient-to-br from-accent-teal/10 to-accent-cyan/10 border-2 border-accent-teal rounded-xl p-6 relative overflow-hidden"
+                    >
+                      {/* Recommended Badge */}
+                      <div className="absolute top-4 right-4">
+                        <span className="px-3 py-1 bg-accent-teal text-white text-xs font-bold rounded-full shadow-lg">
+                          RECOMMENDED
+                        </span>
+                      </div>
+
+                      <div className="mb-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Crown className="w-6 h-6 text-accent-teal" />
+                          <h3 className="text-xl font-bold text-gray-900 dark:text-text-primary">Pro</h3>
+                        </div>
+                        <div className="flex items-baseline gap-2 mb-2">
+                          <span className="text-3xl font-bold text-accent-teal">$9.99</span>
+                          <span className="text-gray-600 dark:text-text-secondary">/month</span>
+                        </div>
+                      </div>
+                      <ul className="space-y-3 mb-6">
+                        <li className="flex items-start gap-2">
+                          <Check className="w-5 h-5 text-accent-teal mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-900 dark:text-text-primary font-medium">Unlimited code analyses</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="w-5 h-5 text-accent-teal mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-900 dark:text-text-primary font-medium">Advanced AI error detection</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="w-5 h-5 text-accent-teal mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-900 dark:text-text-primary font-medium">Real-time code suggestions</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="w-5 h-5 text-accent-teal mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-900 dark:text-text-primary font-medium">Priority support</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="w-5 h-5 text-accent-teal mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-900 dark:text-text-primary font-medium">Detailed analytics & insights</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="w-5 h-5 text-accent-teal mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-900 dark:text-text-primary font-medium">Export reports</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <Check className="w-5 h-5 text-accent-teal mt-0.5 flex-shrink-0" />
+                          <span className="text-sm text-gray-900 dark:text-text-primary font-medium">Custom code patterns</span>
+                        </li>
+                      </ul>
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="w-full px-6 py-3 bg-gradient-to-r from-accent-teal to-accent-cyan text-white font-bold rounded-lg hover:shadow-xl hover:shadow-accent-teal/30 transition-all flex items-center justify-center gap-2"
+                      >
+                        <Zap className="w-5 h-5" />
+                        Upgrade Now
+                      </motion.button>
+                    </motion.div>
+                  </div>
+
+                  {/* Features Highlight */}
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="bg-light-elevated dark:bg-dark-elevated border border-light-border dark:border-dark-border rounded-xl p-6"
+                  >
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-text-primary mb-4 text-center">Why Upgrade to Pro?</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="text-center">
+                        <div className="w-12 h-12 bg-accent-teal/10 rounded-xl flex items-center justify-center mx-auto mb-3">
+                          <Zap className="w-6 h-6 text-accent-teal" />
+                        </div>
+                        <h4 className="font-semibold text-gray-900 dark:text-text-primary mb-2">Faster Learning</h4>
+                        <p className="text-sm text-gray-600 dark:text-text-secondary">Get instant feedback and improve your code quality faster</p>
+                      </div>
+                      <div className="text-center">
+                        <div className="w-12 h-12 bg-accent-cyan/10 rounded-xl flex items-center justify-center mx-auto mb-3">
+                          <TrendingUp className="w-6 h-6 text-accent-cyan" />
+                        </div>
+                        <h4 className="font-semibold text-gray-900 dark:text-text-primary mb-2">Better Insights</h4>
+                        <p className="text-sm text-gray-600 dark:text-text-secondary">Advanced analytics to track your coding progress</p>
+                      </div>
+                      <div className="text-center">
+                        <div className="w-12 h-12 bg-accent-green/10 rounded-xl flex items-center justify-center mx-auto mb-3">
+                          <Shield className="w-6 h-6 text-accent-green" />
+                        </div>
+                        <h4 className="font-semibold text-gray-900 dark:text-text-primary mb-2">Priority Support</h4>
+                        <p className="text-sm text-gray-600 dark:text-text-secondary">Get help when you need it with dedicated support</p>
+                      </div>
+                    </div>
+                  </motion.div>
                 </div>
               </div>
             </motion.div>

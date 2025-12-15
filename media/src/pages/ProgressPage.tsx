@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { TrendingDown, TrendingUp, BarChart3, Award, PieChart, BarChart, BarChartHorizontal } from 'lucide-react';
+import { TrendingDown, TrendingUp, BarChart3, Award, PieChart, BarChart, BarChartHorizontal, Sparkles, Trophy, Star } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { fetchProgressData, fetchAnalysisHistory, fetchMonthlyErrorBreakdown, ProgressData, HistoryItem, MonthlyErrorBreakdown } from '../services/apiService';
 
@@ -96,18 +96,82 @@ export default function ProgressPage() {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.1 }}
             whileHover={{ scale: 1.05, y: -5 }}
-            className="bg-light-surface dark:bg-dark-surface border-2 border-light-border dark:border-dark-border rounded-xl p-6 hover:border-accent-green transition-all shadow-lg cursor-pointer"
+            className={`bg-light-surface dark:bg-dark-surface border-2 rounded-xl p-6 transition-all shadow-lg cursor-pointer relative overflow-hidden ${
+              Number(improvement) > 0
+                ? 'border-accent-green hover:border-accent-green'
+                : 'border-light-border dark:border-dark-border hover:border-accent-green'
+            }`}
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-accent-green/10 rounded-lg flex items-center justify-center">
-                <TrendingDown className="w-6 h-6 text-accent-green" />
+            {/* Celebratory Background Effect */}
+            {Number(improvement) > 0 && (
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: [0, 0.1, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="absolute inset-0 bg-gradient-to-br from-accent-green/20 via-transparent to-accent-cyan/20"
+                />
+                {/* Floating Stars */}
+                {[...Array(3)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ y: 0, opacity: 0.8 }}
+                    animate={{
+                      y: [-10, -30],
+                      opacity: [0.8, 0],
+                      x: [0, (i - 1) * 10]
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      delay: i * 0.5,
+                      ease: "easeOut"
+                    }}
+                    className="absolute top-4 left-1/2 transform -translate-x-1/2"
+                  >
+                    <Sparkles className="w-4 h-4 text-accent-green" />
+                  </motion.div>
+                ))}
+              </>
+            )}
+
+            <div className="flex items-center justify-between mb-4 relative z-10">
+              <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+                Number(improvement) > 0 ? 'bg-accent-green/20' : 'bg-accent-green/10'
+              }`}>
+                {Number(improvement) > 0 ? (
+                  <Trophy className="w-6 h-6 text-accent-green" />
+                ) : (
+                  <TrendingDown className="w-6 h-6 text-accent-green" />
+                )}
               </div>
               <span className={`text-3xl font-bold ${Number(improvement) >= 0 ? 'text-accent-green' : 'text-red-400'}`}>
                 {improvement}%
               </span>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-text-primary mb-1">Improvement</h3>
-            <p className="text-gray-600 dark:text-text-secondary text-sm">Error reduction rate</p>
+
+            {/* Celebratory Message */}
+            {Number(improvement) > 0 ? (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="relative z-10"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <Star className="w-5 h-5 text-accent-green fill-accent-green" />
+                  <h3 className="text-lg font-bold text-accent-green">Congratulations!</h3>
+                </div>
+                <p className="text-gray-600 dark:text-text-secondary text-sm font-medium">
+                  You've improved your code quality! Keep up the great work!
+                </p>
+              </motion.div>
+            ) : (
+              <div className="relative z-10">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-text-primary mb-1">Improvement</h3>
+                <p className="text-gray-600 dark:text-text-secondary text-sm">Error reduction rate</p>
+              </div>
+            )}
           </motion.div>
 
           <motion.div
