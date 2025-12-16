@@ -40,6 +40,12 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
   const [correctedCodeFromAI, setCorrectedCodeFromAI] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
+  // Filter errors that have a count > 0 for display
+  const errorsToDisplay = mockErrors.filter(error => error.count > 0);
+  
+  // Calculate total errors based *only* on the ones we will display
+  const totalErrors = errorsToDisplay.reduce((sum, error) => sum + error.count, 0);
+
   // Fetch AI analysis when code is available
   useEffect(() => {
     if (codeData?.code) {
@@ -73,7 +79,8 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
   };
 
   const handleCopy = () => {
-    const codeToCopy = codeData?.code || mockCorrectedCode;
+    // Use the corrected code as the source for copying
+    const codeToCopy = correctedCodeFromAI || codeData?.code || mockCorrectedCode;
     navigator.clipboard.writeText(codeToCopy).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -90,8 +97,6 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
   // Determine which corrections to apply for underlining
   const correctionsToApply = aiCorrections || null;
 
-  // Calculate stats
-  const totalErrors = mockErrors.reduce((sum, error) => sum + error.count, 0);
 
   return (
     <div className="min-h-screen bg-light-bg dark:bg-dark-bg pb-24 px-4 pt-8 transition-colors duration-300">
@@ -195,25 +200,22 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
 
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {mockErrors.map((error, index) => (
+              {/* === START OF MODIFIED LOGIC: Filtering only errors with count > 0 === */}
+              {errorsToDisplay.map((error, index) => (
                 <motion.div
                   key={error.category}
                   initial={{ y: 10, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 + index * 0.05 }}
                   whileHover={{ scale: 1.03, y: -3 }}
-                  className={`p-4 rounded-lg border-2 transition-all cursor-pointer ${
-                    error.count > 0
-                      ? 'bg-red-500/5 border-red-500/30 hover:border-red-500/50'
-                      : 'bg-accent-green/5 border-accent-green/30 hover:border-accent-green/50'
-                  }`}
+                  className={`p-4 rounded-lg border-2 transition-all cursor-pointer 
+                    bg-red-500/5 border-red-500/30 hover:border-red-500/50`}
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-start gap-3 flex-1">
                       <div
-                        className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg flex-shrink-0 ${
-                          error.count > 0 ? 'bg-red-500/10 text-red-400' : 'bg-accent-green/10 text-accent-green'
-                        }`}
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg flex-shrink-0 
+                          bg-red-500/10 text-red-400`}
                       >
                         {error.icon}
                       </div>
@@ -222,17 +224,14 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      {error.count > 0 ? (
-                        <span className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                          {error.count}
-                        </span>
-                      ) : (
-                        <CheckCircle className="w-6 h-6 text-accent-green" />
-                      )}
+                      <span className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                        {error.count}
+                      </span>
                     </div>
                   </div>
                   <p className="text-sm text-gray-600 dark:text-text-secondary mb-3">{error.description}</p>
-                  {error.count > 0 && (error as any).details && (error as any).details.length > 0 && (
+                  {/* The check for error.count > 0 inside the map is now redundant, but kept the details check */}
+                  {(error as any).details && (error as any).details.length > 0 && (
                     <div className="mt-3 pt-3 border-t border-light-border dark:border-dark-border space-y-3">
                       {(error as any).details.map((detail: any, idx: number) => (
                         <div key={idx} className="space-y-2">
@@ -287,6 +286,17 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
                   )}
                 </motion.div>
               ))}
+              {/* === END OF MODIFIED LOGIC === */}
+
+              {/* Display a "No Errors" message if the filtered list is empty */}
+              {totalErrors === 0 && (
+                <div className="col-span-1 md:col-span-2 p-6 bg-accent-green/10 border-2 border-accent-green/30 rounded-lg flex items-center gap-4">
+                  <CheckCircle className="w-8 h-8 text-accent-green" />
+                  <p className="text-lg font-semibold text-gray-900 dark:text-text-primary">
+                    Great job! No errors were found in your code based on the current analysis categories.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </motion.div>
