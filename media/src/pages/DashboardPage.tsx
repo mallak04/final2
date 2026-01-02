@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import HistoryList from '../components/HistoryList';
 import ProgressChart from '../components/ProgressChart';
+import CircularProgress from '../components/CircularProgress';
 import { useState, useEffect } from 'react';
 import { fetchProgressData, fetchAnalysisHistory, ProgressData, HistoryItem } from '../services/apiService';
 import { Award, TrendingUp, Bot } from 'lucide-react';
@@ -60,63 +61,28 @@ export default function DashboardPage() {
         <p className="text-gray-600 dark:text-text-secondary">Track your coding progress and view analysis history</p>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          whileHover={{ scale: 1.05, y: -8 }}
-          className="bg-accent-teal rounded-xl p-6 text-white shadow-lg cursor-pointer border-2 border-transparent hover:border-white/30 transition-all"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <Bot className="w-8 h-8" />
-            </div>
-            <span className="text-3xl font-bold">
-              {totalAnalyses}
-            </span>
-          </div>
-          <h3 className="text-lg font-semibold mb-1">Total Analyses</h3>
-          <p className="text-white/80 text-sm">Code reviews completed</p>
-        </motion.div>
-
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          whileHover={{ scale: 1.05, y: -8 }}
-          className="bg-accent-cyan rounded-xl p-6 text-white shadow-lg cursor-pointer border-2 border-transparent hover:border-white/30 transition-all"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <TrendingUp className="w-8 h-8" />
-            </div>
-            <span className="text-3xl font-bold">
-              {avgErrors}
-            </span>
-          </div>
-          <h3 className="text-lg font-semibold mb-1">Avg Errors</h3>
-          <p className="text-white/80 text-sm">Per analysis session</p>
-        </motion.div>
-
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          whileHover={{ scale: 1.05, y: -8 }}
-          className="bg-accent-green rounded-xl p-6 text-white shadow-lg cursor-pointer border-2 border-transparent hover:border-white/30 transition-all"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <Award className="w-8 h-8" />
-            </div>
-            <span className="text-3xl font-bold">
-              {Math.round((1 - totalErrors / (totalAnalyses * 10)) * 100)}%
-            </span>
-          </div>
-          <h3 className="text-lg font-semibold mb-1">Code Quality</h3>
-          <p className="text-white/80 text-sm">Overall score</p>
-        </motion.div>
+      <div className="flex justify-around items-center mb-8 py-8">
+        <CircularProgress
+          value={totalAnalyses}
+          label="Total Analyses"
+          subtitle="Code reviews completed"
+          type="number"
+          delay={0.1}
+        />
+        <CircularProgress
+          value={avgErrors}
+          label="Avg Errors"
+          subtitle="Per analysis session"
+          type="number"
+          delay={0.2}
+        />
+        <CircularProgress
+          value={Math.round((1 - totalErrors / (totalAnalyses * 10)) * 100)}
+          label="Code Quality"
+          subtitle="Overall score"
+          type="percentage"
+          delay={0.3}
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

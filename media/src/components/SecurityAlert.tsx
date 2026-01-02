@@ -44,7 +44,7 @@ export default function SecurityAlert() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-light-surface dark:bg-dark-surface rounded-xl shadow-2xl border border-light-border dark:border-dark-border w-full max-w-2xl z-50 max-h-[90vh] overflow-y-auto"
+              className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-light-surface dark:bg-dark-surface rounded shadow-2xl border border-light-border dark:border-dark-border w-full max-w-2xl z-50 max-h-[90vh] overflow-y-auto"
             >
               <div className="bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 flex items-center justify-between rounded-t-xl">
                 <div className="flex items-center gap-3">

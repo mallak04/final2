@@ -131,8 +131,7 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.1 }}
-          whileHover={{ scale: 1.01 }}
-          className="bg-light-surface dark:bg-dark-surface border-2 border-light-border dark:border-dark-border rounded-xl overflow-hidden shadow-lg mb-6 hover:border-accent-green transition-all"
+          className="bg-light-surface dark:bg-dark-surface border-2 border-light-border dark:border-dark-border rounded overflow-hidden shadow-lg mb-6"
         >
           <div className="bg-accent-green px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -175,7 +174,7 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
               </pre>
             </div>
             <p className="text-gray-600 dark:text-text-secondary text-sm mt-3">
-              <u className="decoration-accent-green decoration-2 decoration-wavy">Underlined parts</u> indicate corrections made to fix the errors in your code.
+              Underlined parts indicate corrections made to fix the errors in your code.
             </p>
           </div>
         </motion.div>
@@ -185,8 +184,7 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
-          whileHover={{ scale: 1.01 }}
-          className="bg-light-surface dark:bg-dark-surface border-2 border-light-border dark:border-dark-border rounded-xl overflow-hidden shadow-lg mb-6 hover:border-accent-teal transition-all"
+          className="bg-light-surface dark:bg-dark-surface border-2 border-light-border dark:border-dark-border rounded overflow-hidden shadow-lg mb-6"
         >
           <div className="bg-accent-teal px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -208,8 +206,8 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 + index * 0.05 }}
                   whileHover={{ scale: 1.03, y: -3 }}
-                  className={`p-4 rounded-lg border-2 transition-all cursor-pointer 
-                    bg-red-500/5 border-red-500/30 hover:border-red-500/50`}
+                  className={`p-4 rounded-lg border-2 transition-all cursor-pointer
+                    bg-red-500/5 border-red-500/30 hover:border-red-500/50 hover:shadow-[0_0_20px_rgba(239,68,68,0.3)]`}
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-start gap-3 flex-1">
@@ -306,8 +304,7 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
-          whileHover={{ scale: 1.01 }}
-          className="bg-light-surface dark:bg-dark-surface border-2 border-light-border dark:border-dark-border rounded-xl overflow-hidden shadow-lg hover:border-accent-green transition-all"
+          className="bg-light-surface dark:bg-dark-surface border-2 border-light-border dark:border-dark-border rounded overflow-hidden shadow-lg"
         >
           <div className="bg-accent-cyan px-4 py-3 flex items-center gap-2">
             <div>

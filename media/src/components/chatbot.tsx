@@ -40,7 +40,7 @@ export default function Chatbot() {
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.5 }}
-      className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden flex flex-col"
+      className="bg-white rounded shadow-lg border border-gray-200 overflow-hidden flex flex-col"
       style={{ height: '400px' }}
     >
       <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-4 py-3 flex items-center gap-2">

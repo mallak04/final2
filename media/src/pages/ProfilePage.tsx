@@ -18,7 +18,7 @@ export default function ProfilePage() {
 
   const [userStats, setUserStats] = useState({
     name: 'Developer',
-    email: 'developer@abcode.com',
+    email: 'developer@gmail.com',
     joinDate: 'January 2025',
     totalAnalyses: 0,
     errorsSolved: 0,
@@ -107,14 +107,14 @@ export default function ProfilePage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl overflow-hidden mb-6 shadow-lg"
+          className="bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border rounded overflow-hidden mb-6 shadow-lg"
         >
           <div className="bg-accent-teal h-32" />
           <div className="px-8 pb-8">
             <div className="flex items-end justify-between -mt-16 mb-6">
               <div className="flex items-end gap-4">
                 <div
-                  className="w-28 h-28 bg-accent-teal rounded-2xl border-4 border-light-surface dark:border-dark-surface flex items-center justify-center cursor-pointer"
+                  className="w-28 h-28 bg-accent-teal rounded border-4 border-light-surface dark:border-dark-surface flex items-center justify-center cursor-pointer"
                 >
                   <User className="w-14 h-14 text-white" />
                 </div>
@@ -139,71 +139,69 @@ export default function ProfilePage() {
 
             {/* Stats */}
             <div className="grid grid-cols-3 gap-4">
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                whileHover={{ scale: 1.05, y: -3 }}
-                className="bg-light-elevated dark:bg-dark-elevated border-2 border-light-border dark:border-dark-border rounded-xl p-4 hover:border-accent-teal transition-all cursor-pointer"
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-accent-teal/10 rounded-lg flex items-center justify-center">
-                    <img src="/analysisprof.svg" alt="Analysis" className="w-7 h-7" />
-                  </div>
-                  <div>
-                    {loading ? (
-                      <div className="h-8 w-16 bg-light-border dark:bg-dark-border animate-pulse rounded"></div>
-                    ) : (
-                      <p className="text-2xl font-bold text-gray-900 dark:text-text-primary">{userStats.totalAnalyses}</p>
-                    )}
-                    <p className="text-sm text-gray-600 dark:text-text-secondary">Analyses</p>
-                  </div>
-                </div>
-              </motion.div>
+              {loading ? (
+                <>
+                  <div className="h-32 bg-light-border dark:bg-dark-border animate-pulse rounded"></div>
+                  <div className="h-32 bg-light-border dark:bg-dark-border animate-pulse rounded"></div>
+                  <div className="h-32 bg-light-border dark:bg-dark-border animate-pulse rounded"></div>
+                </>
+              ) : (
+                <>
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="bg-gradient-to-br from-accent-teal/5 to-accent-teal/10 dark:from-accent-teal/10 dark:to-accent-teal/5 border border-accent-teal/20 rounded-lg p-6 relative overflow-hidden group hover:shadow-lg transition-all"
+                  >
+                    {/* Decorative gradient overlay */}
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-accent-teal/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                whileHover={{ scale: 1.05, y: -3 }}
-                className="bg-light-elevated dark:bg-dark-elevated border-2 border-light-border dark:border-dark-border rounded-xl p-4 hover:border-accent-cyan transition-all cursor-pointer"
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-accent-cyan/10 rounded-lg flex items-center justify-center">
-                    <Award className="w-5 h-5 text-accent-cyan" />
-                  </div>
-                  <div>
-                    {loading ? (
-                      <div className="h-8 w-16 bg-light-border dark:bg-dark-border animate-pulse rounded"></div>
-                    ) : (
-                      <p className="text-2xl font-bold text-gray-900 dark:text-text-primary">{userStats.errorsSolved}</p>
-                    )}
-                    <p className="text-sm text-gray-600 dark:text-text-secondary">Errors Fixed</p>
-                  </div>
-                </div>
-              </motion.div>
+                    <div className="relative text-center">
+                      <p className="text-4xl font-bold text-gray-900 dark:text-text-primary mb-3">{userStats.totalAnalyses}</p>
+                      <div className="border-t border-accent-teal/20 pt-3">
+                        <h3 className="text-sm font-semibold text-gray-900 dark:text-text-primary mb-1">Total Analyses</h3>
+                        <p className="text-xs text-gray-600 dark:text-text-secondary">Completed reviews</p>
+                      </div>
+                    </div>
+                  </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                whileHover={{ scale: 1.05, y: -3 }}
-                className="bg-light-elevated dark:bg-dark-elevated border-2 border-light-border dark:border-dark-border rounded-xl p-4 hover:border-accent-green transition-all cursor-pointer"
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-10 h-10 bg-accent-green/10 rounded-lg flex items-center justify-center">
-                    <Calendar className="w-5 h-5 text-accent-green" />
-                  </div>
-                  <div>
-                    {loading ? (
-                      <div className="h-8 w-16 bg-light-border dark:bg-dark-border animate-pulse rounded"></div>
-                    ) : (
-                      <p className="text-2xl font-bold text-gray-900 dark:text-text-primary">{userStats.streak}</p>
-                    )}
-                    <p className="text-sm text-gray-600 dark:text-text-secondary">Day Streak</p>
-                  </div>
-                </div>
-              </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="bg-gradient-to-br from-accent-cyan/5 to-accent-cyan/10 dark:from-accent-cyan/10 dark:to-accent-cyan/5 border border-accent-cyan/20 rounded-lg p-6 relative overflow-hidden group hover:shadow-lg transition-all"
+                  >
+                    {/* Decorative gradient overlay */}
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-accent-cyan/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
+
+                    <div className="relative text-center">
+                      <p className="text-4xl font-bold text-gray-900 dark:text-text-primary mb-3">{userStats.errorsSolved}</p>
+                      <div className="border-t border-accent-cyan/20 pt-3">
+                        <h3 className="text-sm font-semibold text-gray-900 dark:text-text-primary mb-1">Errors Fixed</h3>
+                        <p className="text-xs text-gray-600 dark:text-text-secondary">Total resolved</p>
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="bg-gradient-to-br from-accent-green/5 to-accent-green/10 dark:from-accent-green/10 dark:to-accent-green/5 border border-accent-green/20 rounded-lg p-6 relative overflow-hidden group hover:shadow-lg transition-all"
+                  >
+                    {/* Decorative gradient overlay */}
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-accent-green/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500"></div>
+
+                    <div className="relative text-center">
+                      <p className="text-4xl font-bold text-gray-900 dark:text-text-primary mb-3">{userStats.streak}</p>
+                      <div className="border-t border-accent-green/20 pt-3">
+                        <h3 className="text-sm font-semibold text-gray-900 dark:text-text-primary mb-1">Day Streak</h3>
+                        <p className="text-xs text-gray-600 dark:text-text-secondary">Current streak</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                </>
+              )}
             </div>
           </div>
         </motion.div>
@@ -216,7 +214,7 @@ export default function ProfilePage() {
           className="space-y-4"
         >
           {/* Preferences */}
-          <div className="bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl overflow-hidden">
+          <div className="bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border rounded overflow-hidden">
             <div className="px-6 py-4 border-b border-light-border dark:border-dark-border">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-text-primary">Preferences</h2>
             </div>
@@ -240,7 +238,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Account Information */}
-          <div className="bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl overflow-hidden">
+          <div className="bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border rounded overflow-hidden">
             <div className="px-6 py-4 border-b border-light-border dark:border-dark-border">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-text-primary">Account Information</h2>
             </div>
@@ -277,7 +275,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Sign Out */}
-          <div className="bg-light-surface dark:bg-dark-surface border border-red-500/30 dark:border-red-900/30 rounded-2xl overflow-hidden">
+          <div className="bg-light-surface dark:bg-dark-surface border border-red-500/30 dark:border-red-900/30 rounded overflow-hidden">
             <div className="p-6">
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -312,7 +310,7 @@ export default function ProfilePage() {
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="fixed inset-0 z-50 flex items-start justify-center p-4 overflow-y-auto"
             >
-              <div className="bg-light-surface dark:bg-dark-surface border-2 border-light-border dark:border-dark-border rounded-2xl shadow-2xl max-w-2xl w-full mt-8 mb-32">
+              <div className="bg-light-surface dark:bg-dark-surface border-2 border-light-border dark:border-dark-border rounded shadow-2xl max-w-2xl w-full mt-8 mb-32">
                 {/* Modal Header */}
                 <div className="sticky top-0 bg-light-surface dark:bg-dark-surface border-b border-light-border dark:border-dark-border px-6 py-4 flex items-center justify-between z-10">
                   <h2 className="text-2xl font-bold text-gray-900 dark:text-text-primary">Edit Profile</h2>
@@ -329,7 +327,7 @@ export default function ProfilePage() {
                   {/* Profile Picture */}
                   <div className="flex flex-col items-center gap-4">
                     <div className="relative">
-                      <div className="w-32 h-32 bg-accent-teal rounded-2xl flex items-center justify-center overflow-hidden">
+                      <div className="w-32 h-32 bg-accent-teal rounded flex items-center justify-center overflow-hidden">
                         {editForm.profilePicture ? (
                           <img src={editForm.profilePicture} alt="Profile" className="w-full h-full object-cover" />
                         ) : (
@@ -377,7 +375,7 @@ export default function ProfilePage() {
                       value={editForm.email}
                       onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
                       className="w-full px-4 py-3 bg-light-elevated dark:bg-dark-elevated border-2 border-light-border dark:border-dark-border rounded-lg text-gray-900 dark:text-text-primary focus:outline-none focus:border-accent-teal transition-colors"
-                      placeholder="your@email.com"
+                      placeholder="developer@gmail.com"
                     />
                   </div>
 
@@ -478,11 +476,11 @@ export default function ProfilePage() {
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="fixed inset-0 z-50 flex items-start justify-center p-4 overflow-y-auto"
             >
-              <div className="bg-light-surface dark:bg-dark-surface border-2 border-light-border dark:border-dark-border rounded-2xl shadow-2xl max-w-4xl w-full mt-8 mb-32">
+              <div className="bg-light-surface dark:bg-dark-surface border-2 border-light-border dark:border-dark-border rounded shadow-2xl max-w-4xl w-full mt-8 mb-32">
                 {/* Modal Header */}
                 <div className="sticky top-0 bg-gradient-to-r from-accent-teal to-accent-cyan px-6 py-6 flex items-center justify-between z-10">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                    <div className="w-12 h-12 bg-white/20 rounded flex items-center justify-center">
                       <Crown className="w-7 h-7 text-white" />
                     </div>
                     <div>
@@ -507,7 +505,7 @@ export default function ProfilePage() {
                       initial={{ x: -20, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
                       transition={{ delay: 0.1 }}
-                      className="bg-light-elevated dark:bg-dark-elevated border-2 border-light-border dark:border-dark-border rounded-xl p-6"
+                      className="bg-light-elevated dark:bg-dark-elevated border-2 border-light-border dark:border-dark-border rounded p-6"
                     >
                       <div className="mb-4">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-text-primary mb-2">Basic</h3>
@@ -544,7 +542,7 @@ export default function ProfilePage() {
                       initial={{ x: 20, opacity: 0 }}
                       animate={{ x: 0, opacity: 1 }}
                       transition={{ delay: 0.2 }}
-                      className="bg-gradient-to-br from-accent-teal/10 to-accent-cyan/10 border-2 border-accent-teal rounded-xl p-6 relative overflow-hidden"
+                      className="bg-gradient-to-br from-accent-teal/10 to-accent-cyan/10 border-2 border-accent-teal rounded p-6 relative overflow-hidden"
                     >
                       {/* Recommended Badge */}
                       <div className="absolute top-4 right-4">
@@ -609,26 +607,26 @@ export default function ProfilePage() {
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.3 }}
-                    className="bg-light-elevated dark:bg-dark-elevated border border-light-border dark:border-dark-border rounded-xl p-6"
+                    className="bg-light-elevated dark:bg-dark-elevated border border-light-border dark:border-dark-border rounded p-6"
                   >
                     <h3 className="text-lg font-bold text-gray-900 dark:text-text-primary mb-4 text-center">Why Upgrade to Pro?</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="text-center">
-                        <div className="w-12 h-12 bg-accent-teal/10 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <div className="w-12 h-12 bg-accent-teal/10 rounded flex items-center justify-center mx-auto mb-3">
                           <Zap className="w-6 h-6 text-accent-teal" />
                         </div>
                         <h4 className="font-semibold text-gray-900 dark:text-text-primary mb-2">Faster Learning</h4>
                         <p className="text-sm text-gray-600 dark:text-text-secondary">Get instant feedback and improve your code quality faster</p>
                       </div>
                       <div className="text-center">
-                        <div className="w-12 h-12 bg-accent-cyan/10 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <div className="w-12 h-12 bg-accent-cyan/10 rounded flex items-center justify-center mx-auto mb-3">
                           <TrendingUp className="w-6 h-6 text-accent-cyan" />
                         </div>
                         <h4 className="font-semibold text-gray-900 dark:text-text-primary mb-2">Better Insights</h4>
                         <p className="text-sm text-gray-600 dark:text-text-secondary">Advanced analytics to track your coding progress</p>
                       </div>
                       <div className="text-center">
-                        <div className="w-12 h-12 bg-accent-green/10 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <div className="w-12 h-12 bg-accent-green/10 rounded flex items-center justify-center mx-auto mb-3">
                           <Shield className="w-6 h-6 text-accent-green" />
                         </div>
                         <h4 className="font-semibold text-gray-900 dark:text-text-primary mb-2">Priority Support</h4>

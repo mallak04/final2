@@ -30,7 +30,7 @@ export default function HistoryList({ history }: HistoryListProps) {
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.2 }}
-      className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden"
+      className="bg-white rounded shadow-lg border border-gray-200 overflow-hidden"
     >
       <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-4">
         <h2 className="text-xl font-semibold text-white">Analysis History</h2>

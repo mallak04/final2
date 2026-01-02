@@ -29,7 +29,7 @@ export default function ProgressChart({ data }: ProgressChartProps) {
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.3 }}
-      className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden"
+      className="bg-white rounded shadow-lg border border-gray-200 overflow-hidden"
     >
       <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-4">
         <div className="flex items-center justify-between">

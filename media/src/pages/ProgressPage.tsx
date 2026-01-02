@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { TrendingDown, TrendingUp, BarChart3, Award, PieChart, BarChart, BarChartHorizontal, Sparkles, Trophy, Star } from 'lucide-react';
+import CircularProgress from '../components/CircularProgress';
 import { useState, useEffect } from 'react';
 import { fetchProgressData, fetchAnalysisHistory, fetchMonthlyErrorBreakdown, ProgressData, HistoryItem, MonthlyErrorBreakdown } from '../services/apiService';
 
@@ -85,128 +86,35 @@ export default function ProgressPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-text-primary mb-2">Progress Tracking</h1>
-          <p className="text-gray-600 dark:text-text-secondary">Monitor your coding improvement over time</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-text-primary mb-2 pb-2 border-b-4 border-accent-teal inline-block">
+            Progress Tracking
+          </h1>
+          <p className="text-gray-600 dark:text-text-secondary mt-4">Monitor your coding improvement over time</p>
         </motion.div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            whileHover={{ scale: 1.05, y: -5 }}
-            className={`bg-light-surface dark:bg-dark-surface border-2 rounded-xl p-6 transition-all shadow-lg cursor-pointer relative overflow-hidden ${
-              Number(improvement) > 0
-                ? 'border-accent-green hover:border-accent-green'
-                : 'border-light-border dark:border-dark-border hover:border-accent-green'
-            }`}
-          >
-            {/* Celebratory Background Effect */}
-            {Number(improvement) > 0 && (
-              <>
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: [0, 0.1, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="absolute inset-0 bg-gradient-to-br from-accent-green/20 via-transparent to-accent-cyan/20"
-                />
-                {/* Floating Stars */}
-                {[...Array(3)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ y: 0, opacity: 0.8 }}
-                    animate={{
-                      y: [-10, -30],
-                      opacity: [0.8, 0],
-                      x: [0, (i - 1) * 10]
-                    }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: Infinity,
-                      delay: i * 0.5,
-                      ease: "easeOut"
-                    }}
-                    className="absolute top-4 left-1/2 transform -translate-x-1/2"
-                  >
-                    <Sparkles className="w-4 h-4 text-accent-green" />
-                  </motion.div>
-                ))}
-              </>
-            )}
-
-            <div className="flex items-center justify-between mb-4 relative z-10">
-              <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                Number(improvement) > 0 ? 'bg-accent-green/20' : 'bg-accent-green/10'
-              }`}>
-                {Number(improvement) > 0 ? (
-                  <Trophy className="w-6 h-6 text-accent-green" />
-                ) : (
-                  <TrendingDown className="w-6 h-6 text-accent-green" />
-                )}
-              </div>
-              <span className={`text-3xl font-bold ${Number(improvement) >= 0 ? 'text-accent-green' : 'text-red-400'}`}>
-                {improvement}%
-              </span>
-            </div>
-
-            {/* Celebratory Message */}
-            {Number(improvement) > 0 ? (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="relative z-10"
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <Star className="w-5 h-5 text-accent-green fill-accent-green" />
-                  <h3 className="text-lg font-bold text-accent-green">Congratulations!</h3>
-                </div>
-                <p className="text-gray-600 dark:text-text-secondary text-sm font-medium">
-                  You've improved your code quality! Keep up the great work!
-                </p>
-              </motion.div>
-            ) : (
-              <div className="relative z-10">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-text-primary mb-1">Improvement</h3>
-                <p className="text-gray-600 dark:text-text-secondary text-sm">Error reduction rate</p>
-              </div>
-            )}
-          </motion.div>
-
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            whileHover={{ scale: 1.05, y: -5 }}
-            className="bg-light-surface dark:bg-dark-surface border-2 border-light-border dark:border-dark-border rounded-xl p-6 hover:border-accent-teal transition-all shadow-lg cursor-pointer"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-accent-teal/10 rounded-lg flex items-center justify-center">
-                <BarChart3 className="w-6 h-6 text-accent-teal" />
-              </div>
-              <span className="text-3xl font-bold text-gray-900 dark:text-text-primary">{avgErrors}</span>
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-text-primary mb-1">Avg Errors</h3>
-            <p className="text-gray-600 dark:text-text-secondary text-sm">Per analysis session</p>
-          </motion.div>
-
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            whileHover={{ scale: 1.05, y: -5 }}
-            className="bg-light-surface dark:bg-dark-surface border-2 border-light-border dark:border-dark-border rounded-xl p-6 hover:border-accent-cyan transition-all shadow-lg cursor-pointer"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-accent-cyan/10 rounded-lg flex items-center justify-center">
-                <Award className="w-6 h-6 text-accent-cyan" />
-              </div>
-              <span className="text-3xl font-bold text-gray-900 dark:text-text-primary">{minErrors}</span>
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-text-primary mb-1">Best Score</h3>
-            <p className="text-gray-600 dark:text-text-secondary text-sm">Lowest error count</p>
-          </motion.div>
+        <div className="flex justify-around items-center mb-8 py-8">
+          <CircularProgress
+            value={Math.max(0, Number(improvement))}
+            label="Improvement"
+            subtitle="Error reduction rate"
+            type="percentage"
+            delay={0.1}
+          />
+          <CircularProgress
+            value={avgErrors}
+            label="Avg Errors"
+            subtitle="Per analysis session"
+            type="number"
+            delay={0.2}
+          />
+          <CircularProgress
+            value={minErrors}
+            label="Best Score"
+            subtitle="Lowest error count"
+            type="number"
+            delay={0.3}
+          />
         </div>
 
         {/* Error Type Pie Chart */}
@@ -214,7 +122,7 @@ export default function ProgressPage() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-xl overflow-hidden shadow-lg mb-8"
+          className="bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border rounded overflow-hidden shadow-lg mb-8"
         >
           <div className="bg-accent-teal px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
