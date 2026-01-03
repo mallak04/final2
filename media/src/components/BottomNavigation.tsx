@@ -55,7 +55,7 @@ export default function BottomNavigation({ currentPage, onNavigate }: BottomNavi
             transition={{ duration: 0.2 }}
             className="absolute bottom-24 left-1/2 -translate-x-1/2 pointer-events-none"
           >
-            <div className="bg-dark-surface border border-dark-border rounded-xl shadow-2xl p-4 max-w-xs backdrop-blur-lg">
+            <div className="bg-dark-surface border border-dark-border rounded shadow-2xl p-4 max-w-xs backdrop-blur-lg">
               <div className="flex items-center gap-3 mb-2">
                 {navItems.find((item) => item.id === hoveredPage)?.icon && (
                   <div className={`w-10 h-10 bg-${navItems.find((item) => item.id === hoveredPage)?.color}/10 rounded-lg flex items-center justify-center`}>
@@ -139,7 +139,7 @@ export default function BottomNavigation({ currentPage, onNavigate }: BottomNavi
                   onMouseLeave={() => setHoveredPage(null)}
                   whileHover={{ scale: 1.05, y: -4 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`relative flex flex-col items-center gap-1 px-6 py-3 rounded-xl transition-all ${
+                  className={`relative flex flex-col items-center gap-1 px-6 py-3 rounded transition-all ${
                     isActive
                       ? 'bg-accent-teal shadow-glowTeal'
                       : 'hover:bg-dark-elevated hover:shadow-glow'
@@ -149,7 +149,7 @@ export default function BottomNavigation({ currentPage, onNavigate }: BottomNavi
                   {isActive && (
                     <motion.div
                       layoutId="activeTab"
-                      className="absolute inset-0 bg-accent-teal rounded-xl"
+                      className="absolute inset-0 bg-accent-teal rounded"
                       transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                     />
                   )}
@@ -186,7 +186,7 @@ export default function BottomNavigation({ currentPage, onNavigate }: BottomNavi
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="absolute inset-0 bg-accent-teal/5 rounded-xl"
+                      className="absolute inset-0 bg-accent-teal/5 rounded"
                     />
                   )}
                 </motion.button>

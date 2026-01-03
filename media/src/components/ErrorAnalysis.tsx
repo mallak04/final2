@@ -20,7 +20,7 @@ export default function ErrorAnalysis({ errors }: ErrorAnalysisProps) {
       initial={{ x: 20, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ delay: 0.2 }}
-      className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden"
+      className="bg-white rounded shadow-lg border border-gray-200 overflow-hidden"
     >
       <div className="bg-gradient-to-r from-blue-500 to-purple-600 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">

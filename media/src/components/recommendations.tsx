@@ -11,7 +11,7 @@ export default function Recommendations({ recommendations }: RecommendationsProp
       initial={{ y: 20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.4 }}
-      className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden"
+      className="bg-white rounded shadow-lg border border-gray-200 overflow-hidden"
     >
       <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 flex items-center gap-2">
         <Lightbulb className="w-5 h-5 text-white" />

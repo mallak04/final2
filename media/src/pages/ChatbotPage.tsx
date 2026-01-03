@@ -59,7 +59,7 @@ export default function ChatbotPage() {
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="relative">
-              <div className="w-12 h-12 bg-accent-teal rounded-xl flex items-center justify-center shadow-glow">
+              <div className="w-12 h-12 bg-accent-teal rounded flex items-center justify-center shadow-glow">
                 <Bot className="w-7 h-7 text-white" />
               </div>
               <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-accent-green rounded-full border-2 border-dark-surface"></div>
@@ -86,7 +86,7 @@ export default function ChatbotPage() {
               >
                 <div className={`flex gap-3 max-w-[80%] ${message.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                   {/* Avatar */}
-                  <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${
+                  <div className={`flex-shrink-0 w-10 h-10 rounded flex items-center justify-center ${
                     message.sender === 'bot'
                       ? 'bg-accent-teal shadow-glow'
                       : 'bg-light-elevated dark:bg-dark-elevated border border-light-border dark:border-dark-border'
@@ -127,7 +127,7 @@ export default function ChatbotPage() {
               exit={{ opacity: 0 }}
               className="flex gap-3"
             >
-              <div className="w-10 h-10 rounded-xl bg-accent-teal flex items-center justify-center shadow-glow">
+              <div className="w-10 h-10 rounded bg-accent-teal flex items-center justify-center shadow-glow">
                 <Bot className="w-5 h-5 text-white" />
               </div>
               <div className="bg-light-surface dark:bg-dark-surface border border-light-border dark:border-dark-border rounded-2xl px-5 py-3">
