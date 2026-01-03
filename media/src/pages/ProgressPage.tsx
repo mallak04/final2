@@ -43,9 +43,11 @@ export default function ProgressPage() {
     ? (progressData.reduce((sum, d) => sum + d.errors, 0) / progressData.length).toFixed(1)
     : '0';
 
-  const improvement = progressData.length >= 2
-    ? ((progressData[0].errors - progressData[progressData.length - 1].errors) / progressData[0].errors * 100).toFixed(0)
-    : 0;
+const improvement = progressData.length >= 2 && progressData[0].errors > 0
+    ? Math.round(
+        ((progressData[0].errors - progressData[progressData.length - 1].errors) / progressData[0].errors) * 100
+    )
+    : 0; // Returns 0 if less than 2 sessions OR if the first session had 0 errors
 
   const totalAnalyses = historyData.length;
   const totalErrorsHistory = historyData.reduce((sum, item) => sum + item.total_errors, 0);
