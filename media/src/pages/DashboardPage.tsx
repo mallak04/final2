@@ -11,16 +11,13 @@ export default function DashboardPage() {
   const [progressData, setProgressData] = useState<ProgressData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // TODO: Replace with actual user ID from authentication
-  const userId = "test-user";
-
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
       try {
         const [history, progress] = await Promise.all([
-          fetchAnalysisHistory(userId),
-          fetchProgressData(userId)
+          fetchAnalysisHistory(),
+          fetchProgressData()
         ]);
 
         setHistoryData(history);
@@ -33,7 +30,7 @@ export default function DashboardPage() {
     };
 
     loadData();
-  }, [userId]);
+  }, []);
 
   const totalAnalyses = historyData.length;
   const totalErrors = historyData.reduce((sum, item) => sum + item.total_errors, 0);

@@ -1,3 +1,5 @@
+import { getAuthHeaders } from './authService';
+
 const API_BASE_URL = 'http://localhost:8000';
 
 export interface ProgressData {
@@ -53,10 +55,14 @@ export interface AnalysisResult {
   recommendations?: string[];
 }
 
-// Fetch progress data for a user
-export async function fetchProgressData(userId: string): Promise<ProgressData[]> {
+// Fetch progress data for authenticated user
+export async function fetchProgressData(): Promise<ProgressData[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/analysis/progress/${userId}`);
+    const response = await fetch(`${API_BASE_URL}/api/analysis/progress`, {
+      headers: {
+        ...getAuthHeaders(),
+      },
+    });
     if (!response.ok) {
       throw new Error('Failed to fetch progress data');
     }
@@ -67,10 +73,14 @@ export async function fetchProgressData(userId: string): Promise<ProgressData[]>
   }
 }
 
-// Fetch monthly error breakdown
-export async function fetchMonthlyErrorBreakdown(userId: string): Promise<MonthlyErrorBreakdown[]> {
+// Fetch monthly error breakdown for authenticated user
+export async function fetchMonthlyErrorBreakdown(): Promise<MonthlyErrorBreakdown[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/analysis/breakdown/${userId}`);
+    const response = await fetch(`${API_BASE_URL}/api/analysis/breakdown`, {
+      headers: {
+        ...getAuthHeaders(),
+      },
+    });
     if (!response.ok) {
       throw new Error('Failed to fetch breakdown data');
     }
@@ -81,10 +91,14 @@ export async function fetchMonthlyErrorBreakdown(userId: string): Promise<Monthl
   }
 }
 
-// Fetch analysis history
-export async function fetchAnalysisHistory(userId: string, limit: number = 10): Promise<HistoryItem[]> {
+// Fetch analysis history for authenticated user
+export async function fetchAnalysisHistory(limit: number = 10): Promise<HistoryItem[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/analysis/history/${userId}?limit=${limit}`);
+    const response = await fetch(`${API_BASE_URL}/api/analysis/history?limit=${limit}`, {
+      headers: {
+        ...getAuthHeaders(),
+      },
+    });
     if (!response.ok) {
       throw new Error('Failed to fetch history');
     }
@@ -95,13 +109,14 @@ export async function fetchAnalysisHistory(userId: string, limit: number = 10): 
   }
 }
 
-// Save a new code analysis
-export async function saveCodeAnalysis(analysis: CodeAnalysisCreate): Promise<any> {
+// Save a new code analysis (user_id is now set automatically by backend)
+export async function saveCodeAnalysis(analysis: Omit<CodeAnalysisCreate, 'user_id'>): Promise<any> {
   try {
     const response = await fetch(`${API_BASE_URL}/api/analysis/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...getAuthHeaders(),
       },
       body: JSON.stringify(analysis),
     });
@@ -117,10 +132,14 @@ export async function saveCodeAnalysis(analysis: CodeAnalysisCreate): Promise<an
   }
 }
 
-// Get a specific analysis by ID
+// Get a specific analysis by ID (with ownership verification)
 export async function getAnalysis(analysisId: string): Promise<any> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/analysis/${analysisId}`);
+    const response = await fetch(`${API_BASE_URL}/api/analysis/${analysisId}`, {
+      headers: {
+        ...getAuthHeaders(),
+      },
+    });
     if (!response.ok) {
       throw new Error('Failed to fetch analysis');
     }
@@ -131,10 +150,14 @@ export async function getAnalysis(analysisId: string): Promise<any> {
   }
 }
 
-// Fetch user profile statistics
-export async function fetchUserStats(userId: string): Promise<UserStats | null> {
+// Fetch user profile statistics for authenticated user
+export async function fetchUserStats(): Promise<UserStats | null> {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/analysis/user-stats/${userId}`);
+    const response = await fetch(`${API_BASE_URL}/api/analysis/user-stats`, {
+      headers: {
+        ...getAuthHeaders(),
+      },
+    });
     if (!response.ok) {
       throw new Error('Failed to fetch user stats');
     }
@@ -145,16 +168,14 @@ export async function fetchUserStats(userId: string): Promise<UserStats | null> 
   }
 }
 
-// Analyze code with AI
-// Backend should implement this endpoint: POST /api/analyze
-// Expected request body: { code: string, language: string }
-// Expected response: { correctedCode: string, corrections: string[], errors?: any[], recommendations?: string[] }
+// Analyze code with AI (automatically saves for authenticated user)
 export async function analyzeCode(code: string, language: string): Promise<AnalysisResult> {
   try {
     const response = await fetch(`${API_BASE_URL}/api/analyze`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        ...getAuthHeaders(),
       },
       body: JSON.stringify({ code, language }),
     });

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Mail, Lock, User, Bot } from 'lucide-react';
+import { login, register } from '../services/authService';
 
 interface LoginPageProps {
   onLogin: () => void;
@@ -9,12 +10,43 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // For now, just call onLogin - in production, this would handle authentication
-    onLogin();
+    setError('');
+    setLoading(true);
+
+    try {
+      if (isLogin) {
+        // Login with username (email can be used as username)
+        await login(email, password);
+      } else {
+        // Register
+        if (!username || !email || !password) {
+          setError('Please fill in all required fields');
+          setLoading(false);
+          return;
+        }
+        await register({
+          username,
+          email,
+          password,
+          full_name: fullName || undefined,
+        });
+        // After successful registration, automatically log the user in
+        await login(email, password);
+      }
+      // Call onLogin on success
+      onLogin();
+    } catch (err: any) {
+      setError(err.message || 'Authentication failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -90,39 +122,63 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="p-8">
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-400 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
             <div
               key={isLogin ? 'login' : 'signup'}
               className="space-y-5"
             >
               {!isLogin && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-600 dark:text-text-secondary mb-2">
-                    Full Name
-                  </label>
-                  <div className="relative group">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-text-tertiary group-focus-within:text-accent-teal transition-colors" />
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Enter your name"
-                      className="w-full bg-light-elevated dark:bg-dark-elevated border-2 border-light-border dark:border-dark-border rounded-lg pl-12 pr-4 py-3 text-gray-900 dark:text-text-primary placeholder-text-tertiary focus:outline-none focus:border-accent-teal transition-all"
-                    />
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 dark:text-text-secondary mb-2">
+                      Username <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative group">
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-text-tertiary group-focus-within:text-accent-teal transition-colors" />
+                      <input
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        placeholder="Choose a username"
+                        required
+                        className="w-full bg-light-elevated dark:bg-dark-elevated border-2 border-light-border dark:border-dark-border rounded-lg pl-12 pr-4 py-3 text-gray-900 dark:text-text-primary placeholder-text-tertiary focus:outline-none focus:border-accent-teal transition-all"
+                      />
+                    </div>
                   </div>
-                </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 dark:text-text-secondary mb-2">
+                      Full Name
+                    </label>
+                    <div className="relative group">
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-text-tertiary group-focus-within:text-accent-teal transition-colors" />
+                      <input
+                        type="text"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        placeholder="Enter your full name (optional)"
+                        className="w-full bg-light-elevated dark:bg-dark-elevated border-2 border-light-border dark:border-dark-border rounded-lg pl-12 pr-4 py-3 text-gray-900 dark:text-text-primary placeholder-text-tertiary focus:outline-none focus:border-accent-teal transition-all"
+                      />
+                    </div>
+                  </div>
+                </>
               )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-600 dark:text-text-secondary mb-2">
-                  Email Address
+                  {isLogin ? 'Email or Username' : 'Email Address'} <span className="text-red-500">*</span>
                 </label>
                 <div className="relative group">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-text-tertiary group-focus-within:text-accent-teal transition-colors" />
                   <input
-                    type="email"
+                    type={isLogin ? "text" : "email"}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="your@email.com"
+                    placeholder={isLogin ? "your@email.com or username" : "your@email.com"}
+                    required
                     className="w-full bg-light-elevated dark:bg-dark-elevated border-2 border-light-border dark:border-dark-border rounded-lg pl-12 pr-4 py-3 text-gray-900 dark:text-text-primary placeholder-text-tertiary focus:outline-none focus:border-accent-teal transition-all"
                   />
                 </div>
@@ -130,7 +186,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
 
               <div>
                 <label className="block text-sm font-medium text-gray-600 dark:text-text-secondary mb-2">
-                  Password
+                  Password <span className="text-red-500">*</span>
                 </label>
                 <div className="relative group">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 dark:text-text-tertiary group-focus-within:text-accent-teal transition-colors" />
@@ -139,6 +195,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
+                    required
                     className="w-full bg-light-elevated dark:bg-dark-elevated border-2 border-light-border dark:border-dark-border rounded-lg pl-12 pr-4 py-3 text-gray-900 dark:text-text-primary placeholder-text-tertiary focus:outline-none focus:border-accent-teal transition-all"
                   />
                 </div>
@@ -161,9 +218,17 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
 
               <button
                 type="submit"
-                className="w-full bg-accent-teal text-white font-semibold py-3 rounded-lg shadow-glowTeal transition-all hover:bg-accent-cyan"
+                disabled={loading}
+                className="w-full bg-accent-teal text-white font-semibold py-3 rounded-lg shadow-glowTeal transition-all hover:bg-accent-cyan disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLogin ? 'Sign In' : 'Create Account'}
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    {isLogin ? 'Signing In...' : 'Creating Account...'}
+                  </span>
+                ) : (
+                  <>{isLogin ? 'Sign In' : 'Create Account'}</>
+                )}
               </button>
             </div>
           </form>

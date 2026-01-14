@@ -6,6 +6,7 @@ import ProfilePage from './pages/ProfilePage';
 import ChatbotPage from './pages/ChatbotPage';
 import ProgressPage from './pages/ProgressPage';
 import BottomNavigation from './components/BottomNavigation';
+import { isAuthenticated, getCurrentUser, logout } from './services/authService';
 
 // Type for VS Code API
 declare global {
@@ -25,9 +26,31 @@ interface CodeData {
 type Page = 'analysis' | 'chatbot' | 'progress' | 'profile';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
   const [currentPage, setCurrentPage] = useState<Page>('analysis');
   const [codeData, setCodeData] = useState<CodeData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Check if user is already authenticated on mount
+    const checkAuth = async () => {
+      if (isAuthenticated()) {
+        try {
+          // Verify token is still valid by fetching current user
+          await getCurrentUser();
+          setAuthenticated(true);
+        } catch (error) {
+          // Token expired or invalid
+          console.error('Authentication check failed:', error);
+          logout();
+          setAuthenticated(false);
+        }
+      }
+      setLoading(false);
+    };
+
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     // Get VS Code API if available
@@ -79,11 +102,30 @@ function App() {
 
   // Handle login
   const handleLogin = () => {
-    setIsAuthenticated(true);
+    setAuthenticated(true);
   };
 
+  // Handle logout
+  const handleLogout = () => {
+    logout();
+    setAuthenticated(false);
+    setCurrentPage('analysis');
+  };
+
+  // Show loading spinner while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-light-bg dark:bg-dark-bg flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-accent-teal border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-text-secondary">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   // Show login page if not authenticated
-  if (!isAuthenticated) {
+  if (!authenticated) {
     return <LoginPage onLogin={handleLogin} />;
   }
 

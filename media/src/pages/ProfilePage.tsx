@@ -3,6 +3,7 @@ import { User, Mail, Calendar, Award, Settings, LogOut, X, Camera, Eye, EyeOff, 
 import { useTheme } from '../context/ThemeContext';
 import { useState, useRef, useEffect } from 'react';
 import { fetchUserStats } from '../services/apiService';
+import { getAuthUser } from '../services/authService';
 
 export default function ProfilePage() {
   const { theme, toggleTheme } = useTheme();
@@ -12,9 +13,6 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // TODO: Replace with actual user ID from authentication
-  const userId = "test-user";
 
   const [userStats, setUserStats] = useState({
     name: 'Developer',
@@ -29,14 +27,20 @@ export default function ProfilePage() {
     const loadUserStats = async () => {
       setLoading(true);
       try {
-        const stats = await fetchUserStats(userId);
-        if (stats) {
-          setUserStats(prev => ({
-            ...prev,
+        // Get authenticated user data
+        const authUser = getAuthUser();
+
+        // Fetch user stats from backend
+        const stats = await fetchUserStats();
+        if (stats && authUser) {
+          setUserStats({
+            name: authUser.full_name || authUser.username,
+            email: authUser.email,
+            joinDate: 'January 2025', // You can add created_at to the user object if needed
             totalAnalyses: stats.total_analyses,
             errorsSolved: stats.errors_fixed,
             streak: stats.day_streak,
-          }));
+          });
         }
       } catch (error) {
         console.error('Error loading user stats:', error);
@@ -46,7 +50,7 @@ export default function ProfilePage() {
     };
 
     loadUserStats();
-  }, [userId]);
+  }, []);
 
   const [editForm, setEditForm] = useState({
     name: userStats.name,

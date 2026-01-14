@@ -22,22 +22,32 @@ from app.utils.dependencies import get_current_user
 router = APIRouter(prefix="/api/analysis", tags=["analysis"])
 
 @router.post("/", response_model=CodeAnalysisResponse)
-def create_analysis(analysis: CodeAnalysisCreate, db: Session = Depends(get_db)):
+def create_analysis(
+    analysis: CodeAnalysisCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """Create a new code analysis record"""
-    db_analysis = CodeAnalysis(**analysis.model_dump())
+    # Ensure the analysis belongs to the authenticated user
+    analysis_data = analysis.model_dump()
+    analysis_data['user_id'] = current_user.id
+    db_analysis = CodeAnalysis(**analysis_data)
     db.add(db_analysis)
     db.commit()
     db.refresh(db_analysis)
     return db_analysis
 
-@router.get("/progress/{user_id}", response_model=List[ProgressData])
-def get_progress_data(user_id: str, db: Session = Depends(get_db)):
-    """Get monthly progress data for a user"""
+@router.get("/progress", response_model=List[ProgressData])
+def get_progress_data(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get monthly progress data for the authenticated user"""
     results = db.query(
         func.date_trunc('month', CodeAnalysis.created_at).label('month'),
         func.avg(CodeAnalysis.total_errors).label('avg_errors')
     ).filter(
-        CodeAnalysis.user_id == user_id
+        CodeAnalysis.user_id == current_user.id
     ).group_by(
         func.date_trunc('month', CodeAnalysis.created_at)
     ).order_by(
@@ -52,36 +62,45 @@ def get_progress_data(user_id: str, db: Session = Depends(get_db)):
         for result in results
     ]
 
-@router.get("/breakdown/{user_id}", response_model=List[MonthlyErrorBreakdown])
-def get_monthly_breakdown(user_id: str, db: Session = Depends(get_db)):
+@router.get("/breakdown", response_model=List[MonthlyErrorBreakdown])
+def get_monthly_breakdown(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """
-    Get monthly error breakdown by category for a user.
+    Get monthly error breakdown by category for the authenticated user.
     Now uses dynamic error types from AI instead of predefined categories.
     """
     analytics_service = get_analytics_service()
-    return analytics_service.get_error_breakdown_by_month(user_id, db)
+    return analytics_service.get_error_breakdown_by_month(current_user.id, db)
 
-@router.get("/top-errors/{user_id}")
-def get_top_errors(user_id: str, top_k: int = 10, db: Session = Depends(get_db)):
+@router.get("/top-errors")
+def get_top_errors(
+    top_k: int = 10,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """
-    Get TOP K most frequent error types for a user.
+    Get TOP K most frequent error types for the authenticated user.
 
     Args:
-        user_id: User ID
         top_k: Number of top errors to return (default 10)
-        db: Database session
 
     Returns:
         List of top error types with counts and percentages
     """
     analytics_service = get_analytics_service()
-    return analytics_service.get_top_errors(user_id, top_k, db)
+    return analytics_service.get_top_errors(current_user.id, top_k, db)
 
-@router.get("/history/{user_id}", response_model=List[HistoryItem])
-def get_analysis_history(user_id: str, limit: int = 10, db: Session = Depends(get_db)):
-    """Get analysis history for a user"""
+@router.get("/history", response_model=List[HistoryItem])
+def get_analysis_history(
+    limit: int = 10,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get analysis history for the authenticated user"""
     analyses = db.query(CodeAnalysis).filter(
-        CodeAnalysis.user_id == user_id
+        CodeAnalysis.user_id == current_user.id
     ).order_by(CodeAnalysis.created_at.desc()).limit(limit).all()
 
     return [
@@ -95,17 +114,20 @@ def get_analysis_history(user_id: str, limit: int = 10, db: Session = Depends(ge
         for analysis in analyses
     ]
 
-@router.get("/user-stats/{user_id}", response_model=UserStats)
-def get_user_stats(user_id: str, db: Session = Depends(get_db)):
+@router.get("/user-stats", response_model=UserStats)
+def get_user_stats(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """
-    Get user profile statistics.
+    Get user profile statistics for the authenticated user.
     Now uses dynamic error counting and analytics service.
     """
     analytics_service = get_analytics_service()
 
     # Get all analyses for the user
     analyses = db.query(CodeAnalysis).filter(
-        CodeAnalysis.user_id == user_id
+        CodeAnalysis.user_id == current_user.id
     ).order_by(CodeAnalysis.created_at).all()
 
     # Calculate total analyses
@@ -118,7 +140,7 @@ def get_user_stats(user_id: str, db: Session = Depends(get_db)):
     )
 
     # Calculate day streak using analytics service
-    day_streak = analytics_service.get_user_day_streak(user_id, db)
+    day_streak = analytics_service.get_user_day_streak(current_user.id, db)
 
     return UserStats(
         total_analyses=total_analyses,
@@ -126,8 +148,11 @@ def get_user_stats(user_id: str, db: Session = Depends(get_db)):
         day_streak=day_streak
     )
 
-@router.get("/progress-metrics/{user_id}")
-def get_progress_metrics(user_id: str, db: Session = Depends(get_db)):
+@router.get("/progress-metrics")
+def get_progress_metrics(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """
     Get progress metrics for user dashboard.
 
@@ -139,12 +164,21 @@ def get_progress_metrics(user_id: str, db: Session = Depends(get_db)):
         }
     """
     analytics_service = get_analytics_service()
-    return analytics_service.get_progress_metrics(user_id, db)
+    return analytics_service.get_progress_metrics(current_user.id, db)
 
 @router.get("/{analysis_id}", response_model=CodeAnalysisResponse)
-def get_analysis(analysis_id: str, db: Session = Depends(get_db)):
-    """Get a specific analysis by ID"""
+def get_analysis(
+    analysis_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get a specific analysis by ID, verifying ownership"""
     analysis = db.query(CodeAnalysis).filter(CodeAnalysis.id == analysis_id).first()
     if not analysis:
         raise HTTPException(status_code=404, detail="Analysis not found")
+
+    # Verify the analysis belongs to the authenticated user
+    if analysis.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to access this analysis")
+
     return analysis

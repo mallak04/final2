@@ -12,17 +12,14 @@ export default function ProgressPage() {
   const [monthlyBreakdown, setMonthlyBreakdown] = useState<MonthlyErrorBreakdown[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // TODO: Replace with actual user ID from authentication
-  const userId = "test-user";
-
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
       try {
         const [progress, history, breakdown] = await Promise.all([
-          fetchProgressData(userId),
-          fetchAnalysisHistory(userId),
-          fetchMonthlyErrorBreakdown(userId)
+          fetchProgressData(),
+          fetchAnalysisHistory(),
+          fetchMonthlyErrorBreakdown()
         ]);
 
         setProgressData(progress);
@@ -36,7 +33,7 @@ export default function ProgressPage() {
     };
 
     loadData();
-  }, [userId]);
+  }, []);
 
   const maxErrors = progressData.length > 0 ? Math.max(...progressData.map((d) => d.errors)) : 0;
   const minErrors = progressData.length > 0 ? Math.min(...progressData.map((d) => d.errors)) : 0;

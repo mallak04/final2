@@ -49,22 +49,33 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
   // Fetch AI analysis when code is available
   useEffect(() => {
     if (codeData?.code) {
+      console.log('🚀 Starting code analysis...');
+      console.log('Code length:', codeData.code.length);
+      console.log('Language:', codeData.language);
+
       setIsAnalyzing(true);
       analyzeCode(codeData.code, codeData.language)
         .then((result) => {
+          console.log('✅ Analysis result received:', result);
           // Backend should return: { correctedCode: string, corrections: string[] }
           setCorrectedCodeFromAI(result.correctedCode || null);
           setAiCorrections(result.corrections || null);
+          console.log('Corrected code set:', result.correctedCode ? 'YES' : 'NO');
+          console.log('Corrections count:', result.corrections?.length || 0);
         })
         .catch((error) => {
-          console.error('Failed to analyze code:', error);
+          console.error('❌ Failed to analyze code:', error);
+          console.error('Error details:', error.message);
           // Fall back to displaying original code without AI analysis
           setCorrectedCodeFromAI(null);
           setAiCorrections(null);
         })
         .finally(() => {
           setIsAnalyzing(false);
+          console.log('Analysis complete');
         });
+    } else {
+      console.log('⚠️ No code data available yet');
     }
   }, [codeData]);
 

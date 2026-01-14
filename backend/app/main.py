@@ -17,12 +17,14 @@ app = FastAPI(
     version="2.0.0"
 )
 
-# CORS middleware
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",")
+# CORS middleware - Allow VSCode webview origins
+# VSCode webviews use vscode-webview:// protocol, so we need to allow all origins
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 
+# For development, allow all origins (includes VSCode webviews)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origins=["*"],  # Allow all origins for VSCode webview compatibility
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
