@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import os
 
 from app.database import engine, Base
-from app.routes import analysis
+from app.routes import analysis, auth, ai
 
 load_dotenv()
 
@@ -13,8 +13,8 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Code Analysis API",
-    description="API for tracking code analysis and progress",
-    version="1.0.0"
+    description="API for AI-powered code analysis and learning progress tracking",
+    version="2.0.0"
 )
 
 # CORS middleware
@@ -29,7 +29,9 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(analysis.router)
+app.include_router(auth.router)  # Authentication routes
+app.include_router(ai.router)  # AI analysis routes
+app.include_router(analysis.router)  # Analysis data & statistics routes
 
 @app.get("/")
 def read_root():

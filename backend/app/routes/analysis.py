@@ -7,6 +7,7 @@ from collections import defaultdict
 
 from app.database import get_db
 from app.models.code_analysis import CodeAnalysis
+from app.models.user import User
 from app.schemas.code_analysis import (
     CodeAnalysisCreate,
     CodeAnalysisResponse,
@@ -15,6 +16,8 @@ from app.schemas.code_analysis import (
     HistoryItem,
     UserStats
 )
+from app.services.analytics_service import get_analytics_service
+from app.utils.dependencies import get_current_user
 
 router = APIRouter(prefix="/api/analysis", tags=["analysis"])
 
@@ -51,39 +54,28 @@ def get_progress_data(user_id: str, db: Session = Depends(get_db)):
 
 @router.get("/breakdown/{user_id}", response_model=List[MonthlyErrorBreakdown])
 def get_monthly_breakdown(user_id: str, db: Session = Depends(get_db)):
-    """Get monthly error breakdown by category for a user"""
-    analyses = db.query(CodeAnalysis).filter(
-        CodeAnalysis.user_id == user_id
-    ).order_by(CodeAnalysis.created_at).all()
+    """
+    Get monthly error breakdown by category for a user.
+    Now uses dynamic error types from AI instead of predefined categories.
+    """
+    analytics_service = get_analytics_service()
+    return analytics_service.get_error_breakdown_by_month(user_id, db)
 
-    monthly_data = defaultdict(lambda: {
-        "Brackets": 0,
-        "Commas": 0,
-        "Indentation": 0,
-        "Case & Spelling": 0,
-        "Missing/Wrong Colon": 0,
-        "Other Errors": 0,
-    })
+@router.get("/top-errors/{user_id}")
+def get_top_errors(user_id: str, top_k: int = 10, db: Session = Depends(get_db)):
+    """
+    Get TOP K most frequent error types for a user.
 
-    for analysis in analyses:
-        month_key = analysis.created_at.strftime('%B %Y')
-        monthly_data[month_key]["Brackets"] += analysis.bracket_errors
-        monthly_data[month_key]["Commas"] += analysis.comma_errors
-        monthly_data[month_key]["Indentation"] += analysis.indentation_errors
-        monthly_data[month_key]["Case & Spelling"] += analysis.case_spelling_errors
-        monthly_data[month_key]["Missing/Wrong Colon"] += analysis.colon_errors
-        monthly_data[month_key]["Other Errors"] += analysis.other_errors
+    Args:
+        user_id: User ID
+        top_k: Number of top errors to return (default 10)
+        db: Database session
 
-    result = []
-    for month, categories in monthly_data.items():
-        total = sum(categories.values())
-        result.append(MonthlyErrorBreakdown(
-            month=month,
-            categories=categories,
-            total=total
-        ))
-
-    return result
+    Returns:
+        List of top error types with counts and percentages
+    """
+    analytics_service = get_analytics_service()
+    return analytics_service.get_top_errors(user_id, top_k, db)
 
 @router.get("/history/{user_id}", response_model=List[HistoryItem])
 def get_analysis_history(user_id: str, limit: int = 10, db: Session = Depends(get_db)):
@@ -105,8 +97,11 @@ def get_analysis_history(user_id: str, limit: int = 10, db: Session = Depends(ge
 
 @router.get("/user-stats/{user_id}", response_model=UserStats)
 def get_user_stats(user_id: str, db: Session = Depends(get_db)):
-    """Get user profile statistics"""
-    from datetime import timedelta, date
+    """
+    Get user profile statistics.
+    Now uses dynamic error counting and analytics service.
+    """
+    analytics_service = get_analytics_service()
 
     # Get all analyses for the user
     analyses = db.query(CodeAnalysis).filter(
@@ -116,47 +111,35 @@ def get_user_stats(user_id: str, db: Session = Depends(get_db)):
     # Calculate total analyses
     total_analyses = len(analyses)
 
-    # Calculate total errors fixed (sum of all error fields)
+    # Calculate total errors fixed from total_errors field
     errors_fixed = sum(
-        analysis.bracket_errors +
-        analysis.comma_errors +
-        analysis.indentation_errors +
-        analysis.case_spelling_errors +
-        analysis.colon_errors +
-        analysis.other_errors
+        analysis.total_errors
         for analysis in analyses
     )
 
-    # Calculate day streak (consecutive days with at least 1 analysis)
-    if not analyses:
-        day_streak = 0
-    else:
-        # Get unique dates (only the date part, not time)
-        analysis_dates = sorted(set(
-            analysis.created_at.date() for analysis in analyses
-        ), reverse=True)
-
-        # Calculate streak starting from today
-        today = date.today()
-        streak = 0
-        current_date = today
-
-        for analysis_date in analysis_dates:
-            # Check if this date is consecutive
-            if analysis_date == current_date:
-                streak += 1
-                current_date -= timedelta(days=1)
-            elif analysis_date < current_date:
-                # Gap found, break
-                break
-
-        day_streak = streak
+    # Calculate day streak using analytics service
+    day_streak = analytics_service.get_user_day_streak(user_id, db)
 
     return UserStats(
         total_analyses=total_analyses,
         errors_fixed=errors_fixed,
         day_streak=day_streak
     )
+
+@router.get("/progress-metrics/{user_id}")
+def get_progress_metrics(user_id: str, db: Session = Depends(get_db)):
+    """
+    Get progress metrics for user dashboard.
+
+    Returns:
+        {
+            "improvement": 45.5,  // Percentage (0-100)
+            "avg_errors": 3.2,    // Average errors per session
+            "best_score": 0       // Lowest error count achieved
+        }
+    """
+    analytics_service = get_analytics_service()
+    return analytics_service.get_progress_metrics(user_id, db)
 
 @router.get("/{analysis_id}", response_model=CodeAnalysisResponse)
 def get_analysis(analysis_id: str, db: Session = Depends(get_db)):
