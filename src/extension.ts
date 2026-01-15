@@ -41,13 +41,31 @@ async function openDashboard(context: vscode.ExtensionContext) {
   };
 
   const sendCodeToWebview = () => {
-    currentPanel?.webview.postMessage({
+    if (!currentPanel) {
+      console.log('ERROR: No current panel to send to');
+      return;
+    }
+
+    const message = {
       type: 'updateCode',
       code,
       language,
       fileName
+    };
+
+    console.log('Attempting to send message to webview:', {
+      fileName,
+      codeLength: code.length,
+      language,
+      messageType: message.type
     });
-    console.log('Sent code to webview:', fileName, 'Length:', code.length);
+
+    try {
+      currentPanel.webview.postMessage(message);
+      console.log('✓ Message sent successfully');
+    } catch (error) {
+      console.error('✗ Failed to send message:', error);
+    }
   };
 
   if (currentPanel) {
@@ -103,14 +121,42 @@ function getWebviewContent(context: vscode.ExtensionContext, webview: vscode.Web
     return `${attr}="${fileUri}"`;
   });
 
-  // Add CSP to allow scripts
+  // Add CSP to allow scripts and API calls
   const csp = `
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; 
-    img-src ${webview.cspSource} https: data:; 
-    script-src ${webview.cspSource}; 
-    style-src ${webview.cspSource} 'unsafe-inline';">`;
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none';
+    connect-src http://localhost:8000 http://127.0.0.1:8000;
+    img-src ${webview.cspSource} https: data:;
+    script-src ${webview.cspSource} 'unsafe-inline';
+    style-src ${webview.cspSource} 'unsafe-inline' https:;
+    font-src ${webview.cspSource} https:;">`;
 
   html = html.replace('</head>', `${csp}</head>`);
+
+  // Add script to test if ANY inline script works
+  const initScript = `
+    <script>
+      console.log('🟢 INLINE SCRIPT IS RUNNING!');
+      console.log('acquireVsCodeApi type:', typeof acquireVsCodeApi);
+
+      // Test if we can receive messages WITHOUT acquireVsCodeApi
+      window.addEventListener('message', function(event) {
+        console.log('🟢 INLINE SCRIPT received message:', event.data);
+      });
+
+      if (typeof acquireVsCodeApi !== 'undefined') {
+        window.vscodeApi = acquireVsCodeApi();
+        console.log('✓ VS Code API initialized');
+      } else {
+        console.error('✗ acquireVsCodeApi not available');
+      }
+    </script>`;
+
+  html = html.replace('<body>', `<body>${initScript}`);
+
+  // Debug: Log a snippet of the HTML to verify injection
+  console.log('=== GENERATED HTML (first 1000 chars) ===');
+  console.log(html.substring(0, 1000));
+  console.log('=== Does it contain vscodeApi? ===', html.includes('vscodeApi'));
 
   return html;
 }

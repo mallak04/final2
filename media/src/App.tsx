@@ -53,14 +53,26 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // Get VS Code API if available
-    const vscode = window.acquireVsCodeApi?.();
+    // Get VS Code API - check both window.vscodeApi (set by extension) and acquireVsCodeApi
+    const vscode = (window as any).vscodeApi || window.acquireVsCodeApi?.();
 
     // Listen for messages from the extension
     const handleMessage = (event: MessageEvent) => {
+      console.log('📨 RAW MESSAGE EVENT RECEIVED:', {
+        origin: event.origin,
+        data: event.data,
+        type: typeof event.data,
+        hasType: event.data?.type
+      });
+
       const message = event.data;
 
-      console.log('Received message:', message);
+      if (!message || typeof message !== 'object') {
+        console.warn('⚠️ Invalid message format');
+        return;
+      }
+
+      console.log('✓ Valid message object:', message);
 
       if (message.type === 'updateCode') {
         console.log('✓ Received code update from extension:');
@@ -76,13 +88,18 @@ function App() {
         });
 
         console.log('✓ Code data state updated');
+      } else {
+        console.log('ℹ️ Ignoring message type:', message.type);
       }
     };
 
+    console.log('🎧 Adding message event listener');
     window.addEventListener('message', handleMessage);
+    console.log('✓ Message listener attached');
 
     // Signal that the webview is ready - try multiple times to ensure delivery
     if (vscode) {
+      console.log('✓ VSCode API available');
       console.log('→ Sending webviewReady signal to extension');
       vscode.postMessage({ type: 'webviewReady' });
 
@@ -93,6 +110,15 @@ function App() {
       }, 500);
     } else {
       console.warn('⚠ VSCode API not available - running in browser mode');
+      console.warn('Trying alternative method - sending ready via parent.postMessage');
+
+      // Try alternative communication method
+      try {
+        (window as any).parent?.postMessage({ type: 'webviewReady' }, '*');
+        console.log('→ Sent webviewReady via parent.postMessage');
+      } catch (e) {
+        console.error('Failed to send via parent.postMessage:', e);
+      }
     }
 
     return () => {
