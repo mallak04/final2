@@ -132,8 +132,8 @@ function App() {
   };
 
   // Handle logout
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     setAuthenticated(false);
     setCurrentPage('analysis');
   };
@@ -187,7 +187,7 @@ function App() {
             exit="exit"
             transition={{ duration: 0.3 }}
           >
-            <ProfilePage />
+            <ProfilePage onLogout={handleLogout} />
           </motion.div>
         )}
 

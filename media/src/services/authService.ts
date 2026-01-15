@@ -159,8 +159,24 @@ export async function register(data: RegisterRequest): Promise<User> {
 /**
  * Logout user
  */
-export function logout(): void {
-  clearAuth();
+export async function logout(): Promise<void> {
+  try {
+    const token = getAuthToken();
+    if (token) {
+      // Call logout endpoint
+      await fetch(`${API_BASE_URL}/api/auth/logout`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+    }
+  } catch (error) {
+    console.error('Error during logout:', error);
+  } finally {
+    // Always clear local storage even if API call fails
+    clearAuth();
+  }
 }
 
 /**

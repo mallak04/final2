@@ -17,7 +17,7 @@ class ParserService:
             markdown: Markdown-formatted AI response
 
         Returns:
-            Dictionary with errors, corrected_code, explanations, and language
+            Dictionary with errors, corrected_code, explanations, recommendations, and language
         """
         code_info = self.extract_code_block_with_language(markdown)
 
@@ -25,7 +25,8 @@ class ParserService:
             "errors": self.extract_errors(markdown),
             "corrected_code": code_info["code"],
             "language": code_info["language"],
-            "explanations": self.extract_explanations(markdown)
+            "explanations": self.extract_explanations(markdown),
+            "recommendations": self.extract_recommendations(markdown)
         }
 
     def extract_errors(self, markdown: str) -> List[Dict[str, str]]:
@@ -184,6 +185,34 @@ class ParserService:
                 return expl["explanation"]
 
         return "No detailed explanation available."
+
+    def extract_recommendations(self, markdown: str) -> List[str]:
+        """
+        Extract recommendations from ## Recommendations section.
+
+        Expected format:
+        ## Recommendations
+        - Recommendation 1
+        - Recommendation 2
+
+        Returns:
+            List of recommendation strings
+        """
+        recommendations = []
+
+        # Find the Recommendations section
+        rec_section = self._extract_section(markdown, "Recommendations")
+        if not rec_section:
+            return recommendations
+
+        # Match bullet points (- or * prefix)
+        pattern = r'^[-*]\s+(.+)$'
+        matches = re.findall(pattern, rec_section, re.MULTILINE)
+
+        for rec in matches:
+            recommendations.append(rec.strip())
+
+        return recommendations
 
     def extract_line_numbers(self, error_message: str) -> Optional[int]:
         """

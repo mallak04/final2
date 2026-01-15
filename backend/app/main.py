@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 import os
 
 from app.database import engine, Base
-from app.routes import analysis, auth, ai
+from app.routes import analysis, auth, ai, chatbot
 
 load_dotenv()
 
@@ -34,6 +34,7 @@ app.add_middleware(
 app.include_router(auth.router)  # Authentication routes
 app.include_router(ai.router)  # AI analysis routes
 app.include_router(analysis.router)  # Analysis data & statistics routes
+app.include_router(chatbot.router)  # Chatbot routes
 
 @app.get("/")
 def read_root():

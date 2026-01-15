@@ -46,7 +46,12 @@ class AnalysisService:
         ai_response = await self.ai_service.analyze_code(code, language)
         processing_time_ms = int((time.time() - start_time) * 1000)
 
-        # Step 2: Parse response
+        # Step 2: Check if we have structured output from Groq
+        structured_result = None
+        if hasattr(self.ai_service, 'get_last_structured_result'):
+            structured_result = self.ai_service.get_last_structured_result()
+
+        # Step 2b: Parse response (fallback for non-Groq services)
         parsed = self.parser.parse_ai_response(ai_response)
 
         # Use detected language from AI if available, otherwise use provided language
@@ -62,6 +67,7 @@ class AnalysisService:
             corrected_code=parsed["corrected_code"],
             errors=parsed["errors"],  # Stored as JSON
             explanations=parsed["explanations"],
+            recommendations="\n".join(parsed.get("recommendations", [])),  # Store as text
             total_errors=len(parsed["errors"]),
             processing_time_ms=processing_time_ms
         )
@@ -71,7 +77,10 @@ class AnalysisService:
         db.refresh(analysis)
 
         # Step 4: Format for frontend
-        return self._format_for_frontend(analysis, parsed)
+        if structured_result:
+            return self._format_from_structured(analysis, structured_result, parsed)
+        else:
+            return self._format_for_frontend(analysis, parsed)
 
     def _format_for_frontend(self, analysis: CodeAnalysis, parsed: Dict) -> Dict:
         """
@@ -144,7 +153,42 @@ class AnalysisService:
                 analysis.code_content
             ),
             "errors": list(error_groups.values()),
-            "recommendations": self._generate_recommendations(parsed["errors"])
+            "recommendations": parsed.get("recommendations", [])
+        }
+
+    def _format_from_structured(self, analysis: CodeAnalysis, structured_result, parsed: Dict) -> Dict:
+        """
+        Format response using structured Groq output directly.
+        This preserves all the detailed information from the AI.
+        """
+        errors_formatted = []
+
+        for error_cat in structured_result.errors:
+            errors_formatted.append({
+                "category": error_cat.category,
+                "count": error_cat.count,
+                "description": error_cat.description,
+                "icon": error_cat.icon,
+                "details": [
+                    {
+                        "line": detail.line,
+                        "message": detail.message,
+                        "codeSnippet": detail.codeSnippet,
+                        "correction": detail.suggestion,  # Use suggestion as correction
+                        "explanation": detail.suggestion
+                    } for detail in error_cat.details
+                ]
+            })
+
+        return {
+            "id": analysis.id,
+            "correctedCode": structured_result.corrected_code,
+            "corrections": self._extract_corrections(
+                structured_result.corrected_code,
+                analysis.code_content
+            ),
+            "errors": errors_formatted,
+            "recommendations": structured_result.recommendations
         }
 
     def _get_icon_for_error(self, error_type: str) -> str:

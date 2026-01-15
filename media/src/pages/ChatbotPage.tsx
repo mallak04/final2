@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Bot, User } from 'lucide-react';
+import { Send, Bot, User, Trash2 } from 'lucide-react';
+import { sendChatMessage, clearChatHistory, getChatHistory, ConversationMessage } from '../services/chatbotService';
 
 interface Message {
   id: number;
@@ -10,18 +11,73 @@ interface Message {
 }
 
 export default function ChatbotPage() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      text: "Hi! I'm ABCode AI, your intelligent coding assistant. I can help you understand errors, explain code, suggest improvements, and answer any questions about your projects. How can I assist you today?",
-      sender: 'bot',
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const handleSend = () => {
+  // Load conversation history on mount
+  useEffect(() => {
+    const loadHistory = async () => {
+      try {
+        const history = await getChatHistory();
+
+        if (history.length === 0) {
+          // Show welcome message if no history
+          setMessages([
+            {
+              id: 1,
+              text: "Hi! I'm ABCode AI, your intelligent coding assistant. I can help you understand errors, explain code, suggest improvements, and answer any questions about your projects. How can I assist you today?",
+              sender: 'bot',
+              timestamp: new Date(),
+            },
+          ]);
+        } else {
+          // Convert history to message format
+          const loadedMessages: Message[] = [];
+          let messageId = 1;
+
+          history.forEach((conv: ConversationMessage) => {
+            if (conv.role === 'user' && conv.message) {
+              loadedMessages.push({
+                id: messageId++,
+                text: conv.message,
+                sender: 'user',
+                timestamp: new Date(conv.created_at),
+              });
+            }
+            if (conv.role === 'assistant' && conv.response) {
+              loadedMessages.push({
+                id: messageId++,
+                text: conv.response,
+                sender: 'bot',
+                timestamp: new Date(conv.created_at),
+              });
+            }
+          });
+
+          setMessages(loadedMessages);
+        }
+      } catch (error) {
+        console.error('Error loading chat history:', error);
+        // Show welcome message on error
+        setMessages([
+          {
+            id: 1,
+            text: "Hi! I'm ABCode AI, your intelligent coding assistant. I can help you understand errors, explain code, suggest improvements, and answer any questions about your projects. How can I assist you today?",
+            sender: 'bot',
+            timestamp: new Date(),
+          },
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadHistory();
+  }, []);
+
+  const handleSend = async () => {
     if (!input.trim()) return;
 
     const userMessage: Message = {
@@ -35,18 +91,63 @@ export default function ChatbotPage() {
     setInput('');
     setIsTyping(true);
 
-    // Simulate bot response
-    setTimeout(() => {
+    try {
+      // Get AI response from backend
+      const response = await sendChatMessage(userMessage.text);
+
       const botResponse: Message = {
         id: messages.length + 2,
-        text: "I understand your question. Based on the code analysis, I can see that this is a common pattern in software development. Here's what I recommend:\n\n1. Check your variable declarations\n2. Ensure proper error handling\n3. Consider refactoring for better readability\n\nWould you like me to provide a specific code example?",
+        text: response,
         sender: 'bot',
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, botResponse]);
+    } catch (error) {
+      console.error('Error getting bot response:', error);
+      const errorMessage: Message = {
+        id: messages.length + 2,
+        text: "I'm sorry, I encountered an error processing your message. Please try again.",
+        sender: 'bot',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
+
+  const handleClearHistory = async () => {
+    if (!confirm('Are you sure you want to clear the conversation history?')) {
+      return;
+    }
+
+    try {
+      await clearChatHistory();
+      setMessages([
+        {
+          id: 1,
+          text: "Hi! I'm ABCode AI, your intelligent coding assistant. I can help you understand errors, explain code, suggest improvements, and answer any questions about your projects. How can I assist you today?",
+          sender: 'bot',
+          timestamp: new Date(),
+        },
+      ]);
+    } catch (error) {
+      console.error('Error clearing history:', error);
+      alert('Failed to clear conversation history. Please try again.');
+    }
+  };
+
+  // Show loading spinner while fetching history
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-light-bg dark:bg-dark-bg flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-accent-teal border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-text-secondary">Loading conversation...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-light-bg dark:bg-dark-bg transition-colors duration-300 pb-24 flex flex-col">
@@ -68,6 +169,16 @@ export default function ChatbotPage() {
               <h1 className="text-xl font-bold text-gray-900 dark:text-text-primary">ABCode AI Assistant</h1>
             </div>
           </div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleClearHistory}
+            className="flex items-center gap-2 px-4 py-2 bg-light-elevated dark:bg-dark-elevated border border-light-border dark:border-dark-border rounded-lg text-sm text-text-secondary hover:text-accent-red hover:border-accent-red transition-colors"
+            title="Clear conversation history"
+          >
+            <Trash2 className="w-4 h-4" />
+            <span>Clear History</span>
+          </motion.button>
         </div>
       </motion.div>
 

@@ -38,10 +38,12 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
   // State for AI analysis data
   const [aiCorrections, setAiCorrections] = useState<string[] | null>(null);
   const [correctedCodeFromAI, setCorrectedCodeFromAI] = useState<string | null>(null);
+  const [aiErrors, setAiErrors] = useState<any[] | null>(null);
+  const [aiRecommendations, setAiRecommendations] = useState<string[] | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  // Filter errors that have a count > 0 for display
-  const errorsToDisplay = mockErrors.filter(error => error.count > 0);
+  // Use real errors from AI if available, otherwise use mock data
+  const errorsToDisplay = (aiErrors || mockErrors).filter(error => error.count > 0);
   
   // Calculate total errors based *only* on the ones we will display
   const totalErrors = errorsToDisplay.reduce((sum, error) => sum + error.count, 0);
@@ -57,11 +59,15 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
       analyzeCode(codeData.code, codeData.language)
         .then((result) => {
           console.log('✅ Analysis result received:', result);
-          // Backend should return: { correctedCode: string, corrections: string[] }
+          // Backend returns: { correctedCode, corrections, errors, recommendations }
           setCorrectedCodeFromAI(result.correctedCode || null);
           setAiCorrections(result.corrections || null);
+          setAiErrors(result.errors || null);
+          setAiRecommendations(result.recommendations || null);
           console.log('Corrected code set:', result.correctedCode ? 'YES' : 'NO');
           console.log('Corrections count:', result.corrections?.length || 0);
+          console.log('Errors count:', result.errors?.length || 0);
+          console.log('Recommendations count:', result.recommendations?.length || 0);
         })
         .catch((error) => {
           console.error('❌ Failed to analyze code:', error);
@@ -326,7 +332,7 @@ export default function AnalysisPage({ codeData }: AnalysisPageProps) {
 
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {mockRecommendations.map((recommendation, index) => (
+              {(aiRecommendations || mockRecommendations).map((recommendation, index) => (
                 <motion.div
                   key={index}
                   initial={{ x: -10, opacity: 0 }}

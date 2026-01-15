@@ -189,8 +189,23 @@ _ai_service_instance = None
 
 def get_ai_service() -> AIService:
     """Get singleton AI service instance"""
+    import os
     global _ai_service_instance
+
     if _ai_service_instance is None:
-        # TODO: Load from config
+        # Check if Groq AI should be used
+        use_groq = os.getenv("USE_GROQ_AI", "false").lower() == "true"
+
+        if use_groq:
+            try:
+                from app.services.groq_ai_service import get_groq_service
+                print("✓ Using Groq AI Service with Llama 3.3")
+                return get_groq_service()
+            except Exception as e:
+                print(f"⚠ Failed to initialize Groq AI Service: {e}")
+                print("→ Falling back to mock AI service")
+
+        # Fallback to mock service
         _ai_service_instance = AIService()
+
     return _ai_service_instance

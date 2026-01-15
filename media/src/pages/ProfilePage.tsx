@@ -5,7 +5,11 @@ import { useState, useRef, useEffect } from 'react';
 import { fetchUserStats } from '../services/apiService';
 import { getAuthUser } from '../services/authService';
 
-export default function ProfilePage() {
+interface ProfilePageProps {
+  onLogout?: () => void;
+}
+
+export default function ProfilePage({ onLogout }: ProfilePageProps) {
   const { theme, toggleTheme } = useTheme();
   const [isEditMode, setIsEditMode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -282,6 +286,7 @@ export default function ProfilePage() {
           <div className="bg-light-surface dark:bg-dark-surface border border-red-500/30 dark:border-red-900/30 rounded overflow-hidden">
             <div className="p-6">
               <motion.button
+                onClick={onLogout}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="w-full px-6 py-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 font-medium hover:bg-red-500/20 transition-all flex items-center justify-center gap-2"

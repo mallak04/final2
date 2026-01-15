@@ -55,15 +55,26 @@ const improvement = progressData.length >= 2 && progressData[0].errors > 0
     return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
   };
 
-  // Color mapping for error categories - subtle/muted colors
-  const categoryColors: { [key: string]: string } = {
-    "Brackets": "#8b9dc3",
-    "Commas": "#a78bca",
-    "Indentation": "#7ea3cc",
-    "Case & Spelling": "#6b9e9e",
-    "Missing/Wrong Colon": "#c4a572",
-    "Other Errors": "#7daa92",
-  };
+  // Extract all unique error categories from the breakdown data
+  const allCategories = Array.from(
+    new Set(
+      monthlyBreakdown.flatMap(month =>
+        Object.keys(month.categories)
+      )
+    )
+  );
+
+  // Generate colors dynamically for each category
+  const colorPalette = [
+    "#8b9dc3", "#a78bca", "#7ea3cc", "#6b9e9e",
+    "#c4a572", "#7daa92", "#c48b8b", "#8bc4a8",
+    "#c4a08b", "#8b8bc4", "#c4b38b", "#8bc4c4"
+  ];
+
+  const categoryColors: { [key: string]: string } = {};
+  allCategories.forEach((category, index) => {
+    categoryColors[category] = colorPalette[index % colorPalette.length];
+  });
 
   if (loading) {
     return (

@@ -117,3 +117,17 @@ async def get_current_user_info(current_user: User = Depends(get_current_user)):
         User data
     """
     return current_user
+
+
+@router.post("/logout", status_code=status.HTTP_200_OK)
+async def logout(current_user: User = Depends(get_current_user)):
+    """
+    Logout the current user.
+
+    Args:
+        current_user: Current user from JWT token
+
+    Returns:
+        Success message
+    """
+    return {"message": "Successfully logged out"}
