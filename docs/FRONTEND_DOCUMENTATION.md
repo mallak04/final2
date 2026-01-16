@@ -95,8 +95,6 @@ final2/media/
 │   ├── context/                     # React Context providers
 │   │   └── ThemeContext.tsx        # Global theme management
 │   │
-│   ├── data/                        # Mock data & constants
-│   │   └── mockData.ts             # Sample data for development
 │   │
 │   ├── App.tsx                      # Main application component
 │   ├── main.tsx                     # Application entry point
