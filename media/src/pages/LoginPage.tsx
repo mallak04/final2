@@ -37,8 +37,8 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
           password,
           full_name: fullName || undefined,
         });
-        // After successful registration, automatically log the user in
-        await login(email, password);
+        // After successful registration, automatically log the user in with username
+        await login(username, password);
       }
       // Call onLogin on success
       onLogin();
@@ -76,7 +76,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
           >
             {/* Try to load custom logo, fallback to Bot icon if not found */}
             <img
-              src="/logo.svg"
+              src={(window as any).VSCODE_ASSETS?.logo || "/logo.svg"}
               alt="ABCode Logo"
               className="w-48 h-48 object-contain"
               onError={(e) => {

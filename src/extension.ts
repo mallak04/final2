@@ -121,6 +121,10 @@ function getWebviewContent(context: vscode.ExtensionContext, webview: vscode.Web
     return `${attr}="${fileUri}"`;
   });
 
+  // Generate webview URIs for SVG assets
+  const logoUri = webview.asWebviewUri(vscode.Uri.file(path.join(distPath, 'logo.svg')));
+  const analysisUri = webview.asWebviewUri(vscode.Uri.file(path.join(distPath, 'analysis.svg')));
+
   // Add CSP to allow scripts and API calls
   const csp = `
     <meta http-equiv="Content-Security-Policy" content="default-src 'none';
@@ -132,7 +136,7 @@ function getWebviewContent(context: vscode.ExtensionContext, webview: vscode.Web
 
   html = html.replace('</head>', `${csp}</head>`);
 
-  // Add script to test if ANY inline script works
+  // Add script to initialize vscodeApi and inject SVG assets
   const initScript = `
     <script>
       console.log('🟢 INLINE SCRIPT IS RUNNING!');
@@ -149,6 +153,13 @@ function getWebviewContent(context: vscode.ExtensionContext, webview: vscode.Web
       } else {
         console.error('✗ acquireVsCodeApi not available');
       }
+
+      // Add SVG assets AFTER vscodeApi initialization
+      window.VSCODE_ASSETS = {
+        logo: "${logoUri}",
+        analysis: "${analysisUri}"
+      };
+      console.log('✓ SVG assets injected:', window.VSCODE_ASSETS);
     </script>`;
 
   html = html.replace('<body>', `<body>${initScript}`);

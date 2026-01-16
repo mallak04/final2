@@ -60,7 +60,7 @@ export default function BottomNavigation({ currentPage, onNavigate }: BottomNavi
                 {navItems.find((item) => item.id === hoveredPage)?.icon && (
                   <div className={`w-10 h-10 bg-${navItems.find((item) => item.id === hoveredPage)?.color}/10 rounded-lg flex items-center justify-center`}>
                     {hoveredPage === 'analysis' ? (
-                      <img src="/analysis.svg" alt="Analysis" className="w-6 h-6" />
+                      <img src={(window as any).VSCODE_ASSETS?.analysis || "/analysis.svg"} alt="Analysis" className="w-6 h-6" />
                     ) : (
                       (() => {
                         const Icon = navItems.find((item) => item.id === hoveredPage)?.icon;
@@ -158,7 +158,7 @@ export default function BottomNavigation({ currentPage, onNavigate }: BottomNavi
                   <div className="relative z-10 flex flex-col items-center gap-1">
                     {item.id === 'analysis' ? (
                       <img
-                        src="/analysis.svg"
+                        src={(window as any).VSCODE_ASSETS?.analysis || "/analysis.svg"}
                         alt="Analysis"
                         className={`w-8 h-8 transition-opacity ${
                           isActive ? 'opacity-100' : 'opacity-60'
