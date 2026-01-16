@@ -124,6 +124,7 @@ function getWebviewContent(context: vscode.ExtensionContext, webview: vscode.Web
   // Generate webview URIs for SVG assets
   const logoUri = webview.asWebviewUri(vscode.Uri.file(path.join(distPath, 'logo.svg')));
   const analysisUri = webview.asWebviewUri(vscode.Uri.file(path.join(distPath, 'analysis.svg')));
+  const analysisProfUri = webview.asWebviewUri(vscode.Uri.file(path.join(distPath, 'analysisprof.svg')));
 
   // Add CSP to allow scripts and API calls
   const csp = `
@@ -157,7 +158,8 @@ function getWebviewContent(context: vscode.ExtensionContext, webview: vscode.Web
       // Add SVG assets AFTER vscodeApi initialization
       window.VSCODE_ASSETS = {
         logo: "${logoUri}",
-        analysis: "${analysisUri}"
+        analysis: "${analysisUri}",
+        analysisprof: "${analysisProfUri}"
       };
       console.log('✓ SVG assets injected:', window.VSCODE_ASSETS);
     </script>`;
