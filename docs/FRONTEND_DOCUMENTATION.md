@@ -61,14 +61,6 @@ The frontend is **not a standalone web application** but rather runs inside a **
 
 ## Project Structure
 
-```
-final2/media/
-│
-├── public/                          # Static assets
-│   ├── logo.svg                     # Application logo
-│   ├── analysis.svg                 # Analysis icon
-│   └── vite.svg                     # Vite logo
-│
 ├── src/                             # Source code
 │   ├── pages/                       # Full-page components
 │   │   ├── AnalysisPage.tsx        # Code analysis display
@@ -76,7 +68,6 @@ final2/media/
 │   │   ├── ProgressPage.tsx        # Progress tracking dashboard
 │   │   ├── ProfilePage.tsx         # User profile & settings
 │   │   └── LoginPage.tsx           # Authentication page
-│   │
 │   ├── components/                  # Reusable UI components
 │   │   ├── BottomNavigation.tsx    # Main navigation bar
 │   │   ├── CircularProgress.tsx    # Circular progress indicator
@@ -84,34 +75,25 @@ final2/media/
 │   │   ├── ProgressChart.tsx       # Error trend chart
 │   │   ├── ThemeToggle.tsx         # Dark/Light mode toggle
 │   │   ├── ErrorAnalysis.tsx       # Error breakdown display
-│   │   ├── ChevronStat.tsx         # Statistic with indicator
-│   │   └── [other components]
-│   │
-│   ├── services/                    # API & utility services
+│   │   └──  ChevronStat.tsx        # Statistics in a chevron style display
+│   ├── services/                   # API & utility services
 │   │   ├── authService.ts          # Authentication API calls
 │   │   ├── apiService.ts           # Code analysis API calls
 │   │   └── chatbotService.ts       # Chatbot API calls
-│   │
 │   ├── context/                     # React Context providers
 │   │   └── ThemeContext.tsx        # Global theme management
-│   │
-│   │
 │   ├── App.tsx                      # Main application component
 │   ├── main.tsx                     # Application entry point
 │   └── index.css                    # Global styles
-│
 ├── dist/                            # Build output (generated)
 │   ├── index.html                   # Built HTML
-│   ├── assets/                      # Compiled JS/CSS
-│   └── [static files]
-│
+│   └── assets/                      # Compiled JS/CSS
 ├── vite.config.ts                   # Vite configuration
 ├── tsconfig.json                    # TypeScript configuration
 ├── tailwind.config.js               # Tailwind CSS configuration
 ├── postcss.config.js                # PostCSS configuration
-├── package.json                     # Dependencies & scripts
-└── README.md                        # Frontend documentation
-```
+└── package.json                     # Dependencies & scripts
+ `
 
 ### File Organization Principles
 
